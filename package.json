@@ -2,6 +2,9 @@
   "name": "viewparty-nzl",
   "module": "main.js",
   "type": "module",
+  "scripts": {
+    "dev": "bun run --watch main.js"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
