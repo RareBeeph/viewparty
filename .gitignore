@@ -142,3 +142,10 @@ dist
 .svelte-kit
 
 # End of https://www.toptal.com/developers/gitignore/api/node
+
+
+videos/*.webm
+videos/*.mkv
+
+# ignore my shenanigans
+videos/.tool-versions
