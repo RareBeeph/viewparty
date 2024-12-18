@@ -1,12 +1,14 @@
 {
   "name": "viewparty-nzl",
+  "type": "module",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "watch": "nodemon",
     "format": "prettier --write .",
-    "check-format": "prettier --check ."
+    "check-format": "prettier --check .",
+    "lint": "eslint"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -17,6 +19,9 @@
     "pug": "2.0.0-beta11"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2"
   }
