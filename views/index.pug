@@ -3,3 +3,10 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  form(
+    action = "/endpoint"
+    method = "post"
+  )
+    select
+      option(selected) Correct Horse Battery Staple
+    button(type = "submit") Submit
