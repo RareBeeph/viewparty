@@ -5,6 +5,10 @@ import { extname } from 'node:path';
 import { OBSWebSocket } from 'obs-websocket-js';
 
 class Obs {
+  connection = null;
+  inputName = '';
+  settings = {};
+
   constructor(connection, inputName, settings) {
     this.connection = connection;
     this.inputName = inputName;
@@ -48,4 +52,4 @@ class Obs {
   }
 }
 
-export { Obs };
+export default Obs;

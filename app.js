@@ -6,7 +6,7 @@ import logger from 'morgan';
 
 import indexRouter from './routes/index.js';
 
-import { Obs } from './obs.js';
+import Obs from './obs.js';
 
 const app = express();
 
