@@ -9,7 +9,7 @@ router.get('/', function (req, res, next) {
 
 /* Placeholder */
 router.post('/endpoint', function (req, res, next) {
-  res.sendStatus(200);
+  res.redirect('/');
 });
 
 export default router;
