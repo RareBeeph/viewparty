@@ -6,6 +6,8 @@ import logger from 'morgan';
 
 import indexRouter from './routes/index.js';
 
+import { Obs } from './obs.js';
+
 const app = express();
 
 // view engine setup
@@ -17,6 +19,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(import.meta.dirname, 'public')));
+
+const obs = await Obs.build();
+
+setInterval(() => obs.tryChangeMedia(), 5000);
+
+app.use(function (req, res, next) {
+  req.obs = obs;
+  next();
+});
 
 app.use('/', indexRouter);
 
