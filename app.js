@@ -22,7 +22,17 @@ app.use(express.static(path.join(import.meta.dirname, 'public')));
 
 const obs = await Obs.build();
 
-setInterval(() => obs.tryChangeMedia(), 5000);
+setInterval(async function () {
+  try {
+    await obs.changeMedia();
+  } catch {
+    console.log('change media failed');
+
+    // future media change attempts short-circuit on empty input name
+    // so this assign means we only fail once
+    obs.inputName = '';
+  }
+}, 5000);
 
 app.use(function (req, res, next) {
   req.obs = obs;
