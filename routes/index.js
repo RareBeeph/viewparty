@@ -18,7 +18,6 @@ router.get('/', async function (req, res, next) {
 router.post('/endpoint', async function (req, res, next) {
   try {
     await req.obs.changeInput(req.body.inputName);
-    console.log(req.obs.inputName);
   } catch {
     console.log('change input failed');
   }
