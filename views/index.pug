@@ -1,13 +1,35 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  head
+    meta(http-equiv="refresh", content="5")
+
+  p Current input: #{currentInput}
+
   form(
-    action = "/endpoint"
+    action = "/input"
     method = "post"
   )
     select(name = "inputName")
-      each n in names
+      each n in inputs
+        option= n
+    button(type = "submit") Submit
+
+  p Current video: #{currentVideo}
+
+  form(
+    action = "/skip"
+    method = "post"
+  )
+    button(type = "submit") Skip
+
+  p Next video: #{nextVideo}
+
+  form(
+    action = "/next"
+    method = "post"
+  )
+    select(name = "nextVideo")
+      each n in videos
         option= n
     button(type = "submit") Submit

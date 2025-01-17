@@ -8,6 +8,9 @@ class Obs {
   connection = null;
   inputName = '';
   settings = {};
+  nextVideo = '';
+  nextVideoForced = '';
+  videos = '';
 
   constructor(connection, inputName, settings) {
     this.connection = connection;
@@ -52,15 +55,32 @@ class Obs {
 
     const allowed_filetypes = ['.webm', '.mkv'];
     const files = (await readdir('./videos')).filter(f => allowed_filetypes.includes(extname(f)));
+    this.videos = files;
 
     const status = await this.connection.call('GetMediaInputStatus', {
       inputName: this.inputName,
     });
 
-    if (!status['mediaDuration']) {
+    function randomFilePath() {
       const file = files[randomInt(files.length)];
-      this.settings['local_file'] = realpathSync('./videos/' + file);
+      return realpathSync('./videos/' + file);
+    }
 
+    if (!status['mediaDuration']) {
+      if (!this.nextVideo) {
+        this.nextVideo = randomFilePath();
+      }
+
+      if (this.nextVideoForced) {
+        this.settings['local_file'] = realpathSync('./videos/' + this.nextVideoForced);
+        this.nextVideoForced = '';
+      } else {
+        this.settings['local_file'] = this.nextVideo;
+      }
+
+      this.nextVideo = randomFilePath();
+
+      // observation: if the same video that just finished is picked again, this does nothing
       await this.connection.call('SetInputSettings', {
         inputName: this.inputName,
         inputSettings: this.settings,
