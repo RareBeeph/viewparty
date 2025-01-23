@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'node:path';
 
 const router = express.Router();
 
@@ -10,21 +11,23 @@ router.get('/', async function (req, res, next) {
     })
   ).inputs;
 
-  const inputs = inputList.map(value => value.inputName);
-  const videos = req.obs.videos;
+  const { obs } = req;
 
   let currentVideo = '(n/a)';
-  if (req.obs.settings['local_file']) {
-    currentVideo =
-      req.obs.settings['local_file'].slice(req.obs.settings['local_file'].lastIndexOf('/') + 1) ||
-      '(n/a)';
+  if (obs.settings.local_file) {
+    currentVideo = path.basename(obs.settings.local_file) || '(n/a)';
   }
-  const nextVideo =
-    req.obs.nextVideoForced ||
-    req.obs.nextVideo.slice(req.obs.nextVideo.lastIndexOf('/') + 1) ||
-    '(n/a)';
-  const currentInput = req.obs.inputName || '(n/a)';
-  res.render('index', { title: 'Express', inputs, currentVideo, nextVideo, currentInput, videos });
+
+  const renderParams = {
+    title: 'Express',
+    inputs: inputList.map(value => value.inputName),
+    currentVideo,
+    nextVideo: obs.nextVideo || '(n/a)',
+    currentInput: obs.inputName || '(n/a)',
+    videos: obs.videos,
+  };
+
+  res.render('index', renderParams);
 });
 
 /* Change input */
@@ -39,7 +42,7 @@ router.post('/input', async function (req, res, next) {
 
 /* Change video */
 router.post('/next', async function (req, res, next) {
-  req.obs.nextVideoForced = req.body.nextVideo;
+  req.obs.nextVideo = req.body.nextVideo;
   res.redirect('/');
 });
 
