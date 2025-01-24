@@ -50,12 +50,8 @@ class Obs {
 
   // Try defining reusable attributes like this so as to avoid repeating requests
   get status() {
-    return new Promise((res, reject) => {
-      this.connection
-        .call('GetMediaInputStatus', {
-          inputName: this.inputName,
-        })
-        .then(res, reject);
+    return this.connection.call('GetMediaInputStatus', {
+      inputName: this.inputName,
     });
   }
 
