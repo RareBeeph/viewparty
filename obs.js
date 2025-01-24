@@ -9,7 +9,8 @@ class Obs {
   inputName = '';
   settings = {};
   nextVideo = '';
-  videos = '';
+  // This should be an array based off your usage in changeMedia
+  videos = [];
 
   constructor(connection, inputName, settings) {
     this.connection = connection;
@@ -47,6 +48,17 @@ class Obs {
     this.settings = { ...settingsResp.defaultInputSettings, ...input.inputSettings };
   }
 
+  // Try defining reusable attributes like this so as to avoid repeating requests
+  get status() {
+    return new Promise((res, reject) => {
+      this.connection
+        .call('GetMediaInputStatus', {
+          inputName: this.inputName,
+        })
+        .then(res, reject);
+    });
+  }
+
   async changeMedia() {
     if (!this.inputName) {
       return;
@@ -56,10 +68,7 @@ class Obs {
     const files = (await readdir('./videos')).filter(f => allowed_filetypes.includes(extname(f)));
     this.videos = files;
 
-    const status = await this.connection.call('GetMediaInputStatus', {
-      inputName: this.inputName,
-    });
-
+    const status = await this.status;
     if (!status['mediaDuration']) {
       if (!this.nextVideo) {
         this.nextVideo = files[randomInt(files.length)];

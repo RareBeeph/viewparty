@@ -2,32 +2,28 @@ import express from 'express';
 import path from 'node:path';
 
 const router = express.Router();
+const na = '(n/a)';
 
 /* GET home page. */
 router.get('/', async function (req, res, next) {
+  const { obs } = req;
+  // TODO: Make attribute for this on OBS
   const inputList = (
-    await req.obs.connection.call('GetInputList', {
+    await obs.connection.call('GetInputList', {
       inputKind: 'ffmpeg_source',
     })
   ).inputs;
 
-  const { obs } = req;
+  const currentVideo = obs.settings.local_file ? path.basename(obs.settings.local_file) : na;
 
-  let currentVideo = '(n/a)';
-  if (obs.settings.local_file) {
-    currentVideo = path.basename(obs.settings.local_file) || '(n/a)';
-  }
-
-  const renderParams = {
+  res.render('index', {
     title: 'Express',
     inputs: inputList.map(value => value.inputName),
     currentVideo,
-    nextVideo: obs.nextVideo || '(n/a)',
-    currentInput: obs.inputName || '(n/a)',
+    nextVideo: obs.nextVideo || na,
+    currentInput: obs.inputName || na,
     videos: obs.videos,
-  };
-
-  res.render('index', renderParams);
+  });
 });
 
 /* Change input */
