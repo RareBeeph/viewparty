@@ -20,7 +20,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(import.meta.dirname, 'public')));
 
-const obs = await Obs.build();
+const obs = new Obs();
+obs.connect();
 
 setInterval(async function () {
   try {

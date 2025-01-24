@@ -9,32 +9,28 @@ class Obs {
   inputName = '';
   settings = {};
   nextVideo = '';
-  // This should be an array based off your usage in changeMedia
   videos = [];
 
-  constructor(connection, inputName, settings) {
-    this.connection = connection;
-    this.inputName = inputName;
-    this.settings = settings;
+  constructor() {
+    this.connection = new OBSWebSocket();
   }
 
-  static async build(inputName) {
-    let obs = new OBSWebSocket();
-    await obs.connect('ws://127.0.0.1:4455');
-
-    let input;
-    try {
-      input = await obs.call('GetInputSettings', { inputName });
-    } catch {
-      return new Obs(obs, '', {});
-    }
-
-    const settingsResp = await obs.call('GetInputDefaultSettings', {
-      inputKind: input.inputKind,
+  get status() {
+    return this.connection.call('GetMediaInputStatus', {
+      inputName: this.inputName,
     });
-    const settings = { ...settingsResp.defaultInputSettings, ...input.inputSettings };
+  }
 
-    return new Obs(obs, inputName, settings);
+  get inputList() {
+    return this.connection
+      .call('GetInputList', {
+        inputKind: 'ffmpeg_source',
+      })
+      .then(response => response.inputs);
+  }
+
+  async connect() {
+    await this.connection.connect('ws://127.0.0.1:4455');
   }
 
   async changeInput(inputName) {
@@ -48,10 +44,10 @@ class Obs {
     this.settings = { ...settingsResp.defaultInputSettings, ...input.inputSettings };
   }
 
-  // Try defining reusable attributes like this so as to avoid repeating requests
-  get status() {
-    return this.connection.call('GetMediaInputStatus', {
+  async stopMedia() {
+    await this.connection.call('TriggerMediaInputAction', {
       inputName: this.inputName,
+      mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
     });
   }
 

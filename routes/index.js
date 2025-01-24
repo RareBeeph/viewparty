@@ -7,19 +7,12 @@ const na = '(n/a)';
 /* GET home page. */
 router.get('/', async function (req, res, next) {
   const { obs } = req;
-  // TODO: Make attribute for this on OBS
-  const inputList = (
-    await obs.connection.call('GetInputList', {
-      inputKind: 'ffmpeg_source',
-    })
-  ).inputs;
-
-  const currentVideo = obs.settings.local_file ? path.basename(obs.settings.local_file) : na;
+  const inputList = await obs.inputList;
 
   res.render('index', {
     title: 'Express',
     inputs: inputList.map(value => value.inputName),
-    currentVideo,
+    currentVideo: obs.settings.local_file ? path.basename(obs.settings.local_file) : na,
     nextVideo: obs.nextVideo || na,
     currentInput: obs.inputName || na,
     videos: obs.videos,
@@ -45,10 +38,7 @@ router.post('/next', async function (req, res, next) {
 /* Skip video */
 router.post('/skip', async function (req, res, next) {
   // stop currently playing video
-  await req.obs.connection.call('TriggerMediaInputAction', {
-    inputName: req.obs.inputName,
-    mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
-  });
+  await req.obs.stopMedia();
 
   // play new video if stopped
   await req.obs.changeMedia();
