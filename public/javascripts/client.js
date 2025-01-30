@@ -1,6 +1,6 @@
 window.addEventListener('load', function () {
   // create websocket instance
-  var mySocket = new WebSocket('ws://localhost:10000/ws');
+  const socket = new WebSocket('ws://localhost:10000/ws/');
 
   console.log('loaded');
 

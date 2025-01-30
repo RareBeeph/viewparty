@@ -1,14 +1,16 @@
+import http from 'http';
 import createError from 'http-errors';
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-
-import indexRouter from './routes/index.js';
+import expressWs from 'express-ws';
 
 import Obs from './obs.js';
 
 const app = express();
+export const server = http.createServer(app);
+export const ews = expressWs(app, server);
 
 // view engine setup
 app.set('views', path.join(import.meta.dirname, 'views'));
@@ -40,6 +42,9 @@ app.use(function (req, res, next) {
   next();
 });
 
+// Load this asynchronously during initialization so express-ws
+// can mutate the `express.Router` constructor
+const { default: indexRouter } = await import('./routes/index.js');
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
