@@ -18,7 +18,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(import.meta.dirname, 'public')));
+app.use('/public', express.static(path.join(import.meta.dirname, 'public')));
 
 const obs = new Obs();
 obs.connect();

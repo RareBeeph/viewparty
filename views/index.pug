@@ -2,7 +2,8 @@ extends layout
 
 block content
   head
-    meta(http-equiv="refresh", content="5")
+    // meta(http-equiv="refresh", content="5")
+    script(src="./public/javascripts/client.js")
 
   p Current input: #{currentInput}
 
@@ -10,7 +11,7 @@ block content
     action = "/input"
     method = "post"
   )
-    select(name = "inputName")
+    select(id="inputList" name="inputName")
       each n in inputs
         option= n
     button(type = "submit") Submit
@@ -29,7 +30,7 @@ block content
     action = "/next"
     method = "post"
   )
-    select(name = "nextVideo")
+    select(id="videoList" name="nextVideo")
       each n in videos
         option= n
     button(type = "submit") Submit
