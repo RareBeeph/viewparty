@@ -45,13 +45,62 @@ router.post('/skip', async function (req, res, next) {
   res.redirect('/');
 });
 
-router.ws('/ws', function (ws, req) {
-  ws.on('connection', stream => {
-    console.log('connected');
+router.ws('/ws', async function (ws, req) {
+  const { obs } = req;
+  const inputList = await obs.inputList;
+
+  let stuff = JSON.stringify({
+    inputs: inputList.map(value => value.inputName),
+    currentVideo: obs.settings.local_file ? path.basename(obs.settings.local_file) : na,
+    nextVideo: obs.nextVideo || na,
+    currentInput: obs.inputName || na,
+    videos: obs.videos,
   });
 
-  ws.on('message', function (msg) {
-    ws.send('pong');
+  const poll = () => {
+    const newstuff = JSON.stringify({
+      inputs: inputList.map(value => value.inputName),
+      currentVideo: obs.settings.local_file ? path.basename(obs.settings.local_file) : na,
+      nextVideo: obs.nextVideo || na,
+      currentInput: obs.inputName || na,
+      videos: obs.videos,
+    });
+
+    if (JSON.stringify(newstuff) != JSON.stringify(stuff)) {
+      stuff = newstuff;
+      ws.send(stuff);
+    }
+  };
+
+  setInterval(poll, 5000);
+
+  ws.on('message', async function (msg) {
+    console.log(msg);
+    const input = JSON.parse(msg)['nput'];
+    if (input) {
+      try {
+        await obs.changeInput(input);
+      } catch {
+        console.log('change input failed');
+      }
+    }
+
+    const next = JSON.parse(msg)['next'];
+    if (next) {
+      obs.nextVideo = next;
+    }
+
+    // doesn't seem to poll with updated information immediately
+    const skip = JSON.parse(msg)['skip'];
+    if (skip) {
+      // stop currently playing video
+      await req.obs.stopMedia();
+
+      // play new video if stopped
+      await req.obs.changeMedia();
+    }
+
+    poll();
   });
 });
 

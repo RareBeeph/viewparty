@@ -5,30 +5,33 @@ block content
     // meta(http-equiv="refresh", content="5")
     script(src="./public/javascripts/client.js")
 
-  p Current input: #{currentInput}
+  p(id = "currentInput") Current input: #{currentInput}
 
   form(
     action = "/input"
     method = "post"
+    class = "selectForm"
   )
     select(id="inputList" name="inputName")
       each n in inputs
         option= n
     button(type = "submit") Submit
 
-  p Current video: #{currentVideo}
+  p(id = "currentVideo") Current video: #{currentVideo}
 
   form(
     action = "/skip"
     method = "post"
+    id = "skipForm"
   )
     button(type = "submit") Skip
 
-  p Next video: #{nextVideo}
+  p(id = "nextVideo") Next video: #{nextVideo}
 
   form(
     action = "/next"
     method = "post"
+    class = "selectForm"
   )
     select(id="videoList" name="nextVideo")
       each n in videos
