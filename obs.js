@@ -61,6 +61,7 @@ class Obs {
     this.videos = files;
 
     const status = await this.status;
+    console.log(status);
     if (!status['mediaDuration']) {
       if (!this.nextVideo) {
         this.nextVideo = files[randomInt(files.length)];
@@ -75,6 +76,8 @@ class Obs {
       });
 
       this.nextVideo = files[randomInt(files.length)];
+    } else {
+      console.log("don't need to change!");
     }
   }
 }

@@ -19,45 +19,13 @@ router.get('/', async function (req, res, next) {
   });
 });
 
-/* Change input */
-router.post('/input', async function (req, res, next) {
-  try {
-    await req.obs.changeInput(req.body.inputName);
-  } catch {
-    console.log('change input failed');
-  }
-  res.redirect('/');
-});
-
-/* Change video */
-router.post('/next', async function (req, res, next) {
-  req.obs.nextVideo = req.body.nextVideo;
-  res.redirect('/');
-});
-
-/* Skip video */
-router.post('/skip', async function (req, res, next) {
-  // stop currently playing video
-  await req.obs.stopMedia();
-
-  // play new video if stopped
-  await req.obs.changeMedia();
-  res.redirect('/');
-});
-
 router.ws('/ws', async function (ws, req) {
   const { obs } = req;
-  const inputList = await obs.inputList;
+  let inputList = [];
+  let stuff = {};
 
-  let stuff = JSON.stringify({
-    inputs: inputList.map(value => value.inputName),
-    currentVideo: obs.settings.local_file ? path.basename(obs.settings.local_file) : na,
-    nextVideo: obs.nextVideo || na,
-    currentInput: obs.inputName || na,
-    videos: obs.videos,
-  });
-
-  const poll = () => {
+  const poll = async () => {
+    inputList = await obs.inputList;
     const newstuff = JSON.stringify({
       inputs: inputList.map(value => value.inputName),
       currentVideo: obs.settings.local_file ? path.basename(obs.settings.local_file) : na,
@@ -94,13 +62,13 @@ router.ws('/ws', async function (ws, req) {
     const skip = JSON.parse(msg)['skip'];
     if (skip) {
       // stop currently playing video
-      await req.obs.stopMedia();
+      await obs.stopMedia();
 
       // play new video if stopped
-      await req.obs.changeMedia();
+      await obs.changeMedia();
     }
 
-    poll();
+    await poll();
   });
 });
 

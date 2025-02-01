@@ -1,3 +1,9 @@
+const $ = document.querySelector.bind(document);
+const $$ = document.querySelectorAll.bind(document);
+
+let inputs = [];
+let videos = [];
+
 window.addEventListener('load', function () {
   // create websocket instance
   const socket = new WebSocket('ws://localhost:10000/ws/');
@@ -6,11 +12,8 @@ window.addEventListener('load', function () {
 
   socket.onmessage = onMessage;
 
-  // var form = document.getElementsByClassName('foo');
-  // var input = document.getElementById('input');
-
-  const forms = this.document.getElementsByClassName('selectForm');
-  const inputs = this.document.getElementsByTagName('select');
+  const forms = $$('.selectForm');
+  const inputs = $$('select');
 
   for (let idx = 0; idx < forms.length; idx++) {
     console.log(forms[idx]);
@@ -23,7 +26,7 @@ window.addEventListener('load', function () {
     });
   }
 
-  const skipForm = this.document.getElementById('skipForm');
+  const skipForm = $('#skipForm');
   skipForm.addEventListener('submit', function (e) {
     const input = { skip: true };
     socket.send(JSON.stringify(input));
@@ -35,26 +38,32 @@ function onMessage(event) {
   data = JSON.parse(event.data);
 
   // update input list
-  let inputList = document.getElementById('inputList');
-  inputList.innerHTML = '';
-  for (let input of data.inputs) {
-    inputList.appendChild(new Option(input));
+  if (JSON.stringify(inputs) != JSON.stringify(data.inputs)) {
+    inputs = data.inputs;
+    let inputList = $('#inputList');
+    inputList.innerHTML = '';
+    for (let input of inputs) {
+      inputList.appendChild(new Option(input));
+    }
   }
 
   // update status tags
-  let currentInput = document.getElementById('currentInput');
+  let currentInput = $('#currentInput');
   currentInput.textContent = 'Current input: ' + data.currentInput;
 
-  let currentVideo = document.getElementById('currentVideo');
+  let currentVideo = $('#currentVideo');
   currentVideo.textContent = 'Current video: ' + data.currentVideo;
 
-  let nextVideo = document.getElementById('nextVideo');
+  let nextVideo = $('#nextVideo');
   nextVideo.textContent = 'Next video: ' + data.nextVideo;
 
   // update video list
-  let videoList = document.getElementById('videoList');
-  videoList.innerHTML = '';
-  for (let video of data.videos) {
-    videoList.appendChild(new Option(video));
+  if (JSON.stringify(videos) != JSON.stringify(data.videos)) {
+    videos = data.videos;
+    let videoList = $('#videoList');
+    videoList.innerHTML = '';
+    for (let video of data.videos) {
+      videoList.appendChild(new Option(video));
+    }
   }
 }
