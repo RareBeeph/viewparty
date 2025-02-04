@@ -33,7 +33,6 @@ router.ws('/ws', async function (ws, req) {
       await obs.update();
     }
 
-    // doesn't seem to poll with updated information immediately
     const skip = JSON.parse(msg)['skip'];
     if (skip) {
       // stop currently playing video
