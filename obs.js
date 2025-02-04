@@ -3,6 +3,7 @@ import { realpathSync } from 'node:fs';
 import { readdir } from 'node:fs/promises';
 import { extname } from 'node:path';
 import { OBSWebSocket } from 'obs-websocket-js';
+import path from 'node:path';
 
 class Obs {
   connection = null;
@@ -10,6 +11,7 @@ class Obs {
   settings = {};
   nextVideo = '';
   videos = [];
+  clients = new Set();
 
   constructor() {
     this.connection = new OBSWebSocket();
@@ -29,6 +31,28 @@ class Obs {
       .then(response => response.inputs);
   }
 
+  get data() {
+    const na = 'n/a';
+
+    return this.inputList.then(inputs => {
+      return {
+        inputs: inputs.map(value => value.inputName),
+        currentVideo: this.settings.local_file ? path.basename(this.settings.local_file) : na,
+        nextVideo: this.nextVideo || na,
+        currentInput: this.inputName || na,
+        videos: this.videos,
+      };
+    });
+  }
+
+  get mediaStopped() {
+    if (!this.inputName) {
+      return false;
+    }
+
+    return this.status.then(currentStatus => !currentStatus['mediaDuration']);
+  }
+
   async connect() {
     await this.connection.connect('ws://127.0.0.1:4455');
   }
@@ -42,6 +66,8 @@ class Obs {
 
     this.inputName = inputName;
     this.settings = { ...settingsResp.defaultInputSettings, ...input.inputSettings };
+
+    this.changeMedia();
   }
 
   async stopMedia() {
@@ -60,25 +86,27 @@ class Obs {
     const files = (await readdir('./videos')).filter(f => allowed_filetypes.includes(extname(f)));
     this.videos = files;
 
-    const status = await this.status;
-    console.log(status);
-    if (!status['mediaDuration']) {
-      if (!this.nextVideo) {
-        this.nextVideo = files[randomInt(files.length)];
-      }
-
-      this.settings['local_file'] = realpathSync('./videos/' + this.nextVideo);
-
-      // observation: if the same video that just finished is picked again, this does nothing
-      await this.connection.call('SetInputSettings', {
-        inputName: this.inputName,
-        inputSettings: this.settings,
-      });
-
+    if (!this.nextVideo) {
       this.nextVideo = files[randomInt(files.length)];
-    } else {
-      console.log("don't need to change!");
     }
+
+    this.settings['local_file'] = realpathSync('./videos/' + this.nextVideo);
+
+    // observation: if the same video that just finished is picked again, this does nothing
+    await this.connection.call('SetInputSettings', {
+      inputName: this.inputName,
+      inputSettings: this.settings,
+    });
+
+    this.nextVideo = files[randomInt(files.length)];
+
+    this.update();
+  }
+
+  update() {
+    this.clients.forEach(client => {
+      this.data.then(currentData => client.send(JSON.stringify(currentData)));
+    });
   }
 }
 

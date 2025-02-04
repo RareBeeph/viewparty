@@ -26,14 +26,16 @@ const obs = new Obs();
 obs.connect();
 
 setInterval(async function () {
-  try {
-    await obs.changeMedia();
-  } catch {
-    console.log('change media failed');
+  if (await obs.mediaStopped) {
+    try {
+      await obs.changeMedia();
+    } catch {
+      console.log('change media failed');
 
-    // future media change attempts short-circuit on empty input name
-    // so this assign means we only fail once
-    obs.inputName = '';
+      // future media change attempts short-circuit on empty input name
+      // so this assign means we only fail once
+      obs.inputName = '';
+    }
   }
 }, 5000);
 
