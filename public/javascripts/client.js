@@ -8,27 +8,23 @@ window.addEventListener('load', function () {
   // create websocket instance
   const socket = new WebSocket('ws://localhost:10000/ws/');
 
-  console.log('loaded');
-
   socket.onmessage = onMessage;
 
-  const forms = $$('.selectForm');
-  const inputs = $$('select');
-
-  for (let idx = 0; idx < forms.length; idx++) {
-    console.log(forms[idx]);
-    forms[idx].addEventListener('submit', function (e) {
+  $$('.selectForm').forEach(form => {
+    form.addEventListener('submit', function (e) {
       // on forms submission send input to our server
-      const input = {};
-      input[forms[idx].action.substr(-4, 4)] = inputs[idx].value;
+      const input = {
+        action: form.getAttribute('action'),
+        data: form.querySelector('select').value,
+      };
       socket.send(JSON.stringify(input));
       e.preventDefault();
     });
-  }
+  });
 
   const skipForm = $('#skipForm');
   skipForm.addEventListener('submit', function (e) {
-    const input = { skip: true };
+    const input = { action: 'skip' };
     socket.send(JSON.stringify(input));
     e.preventDefault();
   });

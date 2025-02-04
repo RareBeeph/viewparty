@@ -18,27 +18,23 @@ router.ws('/ws', async function (ws, req) {
   });
 
   ws.on('message', async function (msg) {
-    const input = JSON.parse(msg)['nput'];
-    if (input) {
+    const input = JSON.parse(msg);
+
+    if (input.action == 'input') {
       try {
-        await obs.changeInput(input);
+        await obs.changeInput(input.data);
       } catch {
         console.log('change input failed');
       }
     }
 
-    const next = JSON.parse(msg)['next'];
-    if (next) {
-      obs.nextVideo = next;
+    if (input.action == 'next') {
+      obs.nextVideo = input.data;
       await obs.update();
     }
 
-    const skip = JSON.parse(msg)['skip'];
-    if (skip) {
-      // stop currently playing video
+    if (input.action == 'skip') {
       await obs.stopMedia();
-
-      // play new video if stopped
       await obs.changeMedia();
     }
   });

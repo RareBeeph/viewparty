@@ -8,7 +8,7 @@ block content
   p#currentInput Current input: #{currentInput}
 
   form.selectForm(
-    action = "/input"
+    action = "input"
     method = "post"
   )
     select#inputList(name="inputName")
@@ -19,7 +19,7 @@ block content
   p#currentVideo Current video: #{currentVideo}
 
   form#skipForm(
-    action = "/skip"
+    action = "skip"
     method = "post"
   )
     button(type = "submit") Skip
@@ -27,7 +27,7 @@ block content
   p#nextVideo Next video: #{nextVideo}
 
   form.selectForm(
-    action = "/next"
+    action = "next"
     method = "post"
   )
     select#videoList(name="nextVideo")
