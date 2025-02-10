@@ -20,22 +20,23 @@ router.ws('/ws', async function (ws, req) {
   ws.on('message', async function (msg) {
     const input = JSON.parse(msg);
 
-    if (input.action == 'input') {
-      try {
-        await obs.changeInput(input.data);
-      } catch {
-        console.log('change input failed');
-      }
-    }
+    switch (input.action) {
+      case 'input':
+        try {
+          await obs.changeInput(input.data);
+        } catch {
+          console.log('change input failed');
+        }
 
-    if (input.action == 'next') {
-      obs.nextVideo = input.data;
-      await obs.update();
-    }
+      case 'next':
+        obs.nextVideo = input.data;
+        await obs.update();
 
-    if (input.action == 'skip') {
-      await obs.stopMedia();
-      await obs.changeMedia();
+      case 'skip':
+        await obs.stopMedia();
+        await obs.changeMedia();
+
+      default:
     }
   });
 });

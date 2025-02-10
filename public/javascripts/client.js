@@ -12,21 +12,21 @@ window.addEventListener('load', function () {
 
   $$('.selectForm').forEach(form => {
     form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
       // on forms submission send input to our server
       const input = {
         action: form.getAttribute('action'),
         data: form.querySelector('select').value,
       };
       socket.send(JSON.stringify(input));
-      e.preventDefault();
     });
   });
 
-  const skipForm = $('#skipForm');
-  skipForm.addEventListener('submit', function (e) {
+  $('#skipForm').addEventListener('submit', function (e) {
+    e.preventDefault();
     const input = { action: 'skip' };
     socket.send(JSON.stringify(input));
-    e.preventDefault();
   });
 });
 
