@@ -27,14 +27,17 @@ router.ws('/ws', async function (ws, req) {
         } catch {
           console.log('change input failed');
         }
+        break;
 
       case 'next':
         obs.nextVideo = input.data;
         await obs.update();
+        break;
 
       case 'skip':
         await obs.stopMedia();
         await obs.changeMedia();
+        break;
 
       default:
     }
