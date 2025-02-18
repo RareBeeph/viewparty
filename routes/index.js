@@ -4,7 +4,7 @@ const router = express.Router();
 const na = '(n/a)';
 
 /* GET home page. */
-router.get('/', async function (req, res, next) {
+router.get('/old', async function (req, res, next) {
   const { obs } = req;
   res.render('index', await obs.data);
 });

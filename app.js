@@ -1,10 +1,10 @@
 import http from 'http';
-import createError from 'http-errors';
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import expressWs from 'express-ws';
+import proxy from 'express-http-proxy';
 
 import Obs from './obs.js';
 
@@ -50,9 +50,12 @@ const { default: indexRouter } = await import('./routes/index.js');
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
+// app.use(function (req, res, next) {
+//   next(createError(404));
+// });
+
+// catch 404 and forward to the jsx client
+app.get('*', proxy('http://localhost:5173'));
 
 // error handler
 app.use(function (err, req, res, next) {
