@@ -1,10 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
+import SocketProvider from './socketcontext'
+import { Container, Row, Col } from 'react-bootstrap'
+import SelectForm from './selectform'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <h1>Hello world!</h1>
-    <App/>
+    <SocketProvider>
+      <SelectForm action="next"/>
+    </SocketProvider>
   </React.StrictMode>,
 )

@@ -24,6 +24,7 @@
     "obs-websocket-js": "^5.0.6",
     "pug": "2.0.0-beta11",
     "react": "^19.0.0",
+    "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
     "react-use-websocket": "^4.13.0"
   },

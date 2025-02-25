@@ -20,6 +20,8 @@ router.ws('/ws', async function (ws, req) {
   ws.on('message', async function (msg) {
     const input = JSON.parse(msg);
 
+    console.log(input);
+
     switch (input.action) {
       case 'input':
         try {
@@ -37,6 +39,10 @@ router.ws('/ws', async function (ws, req) {
       case 'skip':
         await obs.stopMedia();
         await obs.changeMedia();
+        break;
+
+      case 'plsdata':
+        ws.send(JSON.stringify(await obs.data));
         break;
 
       default:
