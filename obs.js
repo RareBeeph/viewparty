@@ -58,6 +58,10 @@ class Obs {
   }
 
   async changeInput(inputName) {
+    if (this.inputName) {
+      this.stopMedia();
+    }
+
     const input = await this.connection.call('GetInputSettings', { inputName });
 
     const settingsResp = await this.connection.call('GetInputDefaultSettings', {
@@ -78,6 +82,8 @@ class Obs {
   }
 
   async changeMedia() {
+    // TODO: pick a new next video if we fail due to nonexistent file
+
     if (!this.inputName) {
       return;
     }

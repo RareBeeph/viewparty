@@ -7,7 +7,8 @@ import SelectForm from './selectform'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <SocketProvider>
-      <SelectForm action="next"/>
+      <SelectForm action="input" options="inputs"/>
+      <SelectForm action="next" options="videos"/>
     </SocketProvider>
   </React.StrictMode>,
 )
