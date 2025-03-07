@@ -15,7 +15,7 @@ const SelectForm = (props) => {
   }
 
   useEffect(()=>{
-    if(socket.backendstate[props.options]) {
+    if(socket.backendstate[props.options] && !selected) {
       setSelected(socket.backendstate[props.options][0])
     }
   }, [socket.backendstate])
