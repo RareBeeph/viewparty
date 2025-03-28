@@ -31,7 +31,7 @@ window.addEventListener('load', function () {
 });
 
 function onMessage(event) {
-  data = JSON.parse(event.data);
+  let data = JSON.parse(event.data);
 
   // update input list
   if (JSON.stringify(inputs) != JSON.stringify(data.inputs)) {

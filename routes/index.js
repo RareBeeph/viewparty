@@ -1,10 +1,10 @@
 import express from 'express';
 
 const router = express.Router();
-const na = '(n/a)';
+// const na = '(n/a)';
 
 /* GET home page. */
-router.get('/old', async function (req, res, next) {
+router.get('/old', async function (req, res) {
   const { obs } = req;
   res.render('index', await obs.data);
 });

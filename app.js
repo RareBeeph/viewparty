@@ -39,7 +39,7 @@ setInterval(async function () {
   }
 }, 5000);
 
-app.use(function (req, res, next) {
+app.use(function (req, _res, next) {
   req.obs = obs;
   next();
 });
@@ -58,7 +58,7 @@ app.use('/', indexRouter);
 app.get('*', proxy('http://localhost:5173'));
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res, _next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
