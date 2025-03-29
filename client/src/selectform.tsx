@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { SocketContext } from "./socketcontext"
 
 
-const SelectForm = (props) => {
+const SelectForm = (props: { action: string, options: string}) => {
   const [selected, setSelected] = useState("")
   const socket = useContext(SocketContext)
 
@@ -11,7 +11,9 @@ const SelectForm = (props) => {
       action: props.action,
       data: selected,
     };
-    socket.socket.sendMessage(JSON.stringify(input))
+    if (socket.socket !== null) {
+      socket.socket.sendMessage(JSON.stringify(input))
+    }
   }
 
   useEffect(()=>{
@@ -23,6 +25,7 @@ const SelectForm = (props) => {
   if(socket.backendstate){
     if(socket.backendstate[props.options]){
       const inputs = socket.backendstate[props.options]
+      if (typeof inputs === "string") {return}
       return (
         <>
           <select onChange={e => setSelected(e.target.value)}>

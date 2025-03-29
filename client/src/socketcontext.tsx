@@ -1,14 +1,24 @@
 import { createContext, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
+import type { ReactNode } from "react";
+import type { WebSocketHook } from "react-use-websocket/dist/lib/types";
 
-export const SocketContext = createContext(null)
+type Backend = {[key:string]: string | string[]}
+type SocketStuff = { socket: WebSocketHook<unknown> | null, backendstate: Backend }
 
-export default function SocketProvider ({ children }) {
-  let [backendstate, setbackendstate] = useState({})
+const stuff: SocketStuff = { socket: null, backendstate: {} }
+export const SocketContext = createContext(stuff)
+
+type Props = { children: ReactNode }
+
+export default function SocketProvider ({ children }: Props) {
+  const [backendstate, setbackendstate] = useState({})
 
   const options = {
-    onMessage: (event) => {
-      setbackendstate(JSON.parse(event.data))
+    onMessage: (event: WebSocketEventMap['message']) => {
+      const data: string = event.data
+      const newstate: Backend = JSON.parse(data)
+      setbackendstate(newstate)
     }
   }
 
