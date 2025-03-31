@@ -23,6 +23,7 @@ export default [
   },
   pluginJs.configs.recommended,
   pluginReact.configs.flat.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
   pluginReact.configs.flat['jsx-runtime'],
+  { ignores: ['**/*.{js,jsx}'] },
+  ...tseslint.configs.recommendedTypeChecked,
 ];

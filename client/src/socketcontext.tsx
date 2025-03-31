@@ -16,8 +16,8 @@ export default function SocketProvider ({ children }: Props) {
 
   const options = {
     onMessage: (event: WebSocketEventMap['message']) => {
-      const data: string = event.data
-      const newstate: Backend = JSON.parse(data)
+      const data: string = typeof event.data == 'string' ? event.data : ""
+      const newstate: Backend = JSON.parse(data) // help lol
       setbackendstate(newstate)
     }
   }
