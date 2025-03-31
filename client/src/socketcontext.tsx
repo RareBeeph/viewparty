@@ -1,38 +1,34 @@
-import { createContext, useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
-import type { ReactNode } from "react";
-import type { WebSocketHook } from "react-use-websocket/dist/lib/types";
+import { createContext, useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
+import type { ReactNode } from 'react';
+import type { WebSocketHook } from 'react-use-websocket/dist/lib/types';
 
-type Backend = {[key:string]: string | string[]}
-type SocketStuff = { socket: WebSocketHook<unknown> | null, backendstate: Backend }
+type Backend = { [key: string]: string | string[] };
+type SocketStuff = { socket: WebSocketHook<unknown> | null; backendstate: Backend };
 
-const stuff: SocketStuff = { socket: null, backendstate: {} }
-export const SocketContext = createContext(stuff)
+const stuff: SocketStuff = { socket: null, backendstate: {} };
+export const SocketContext = createContext(stuff);
 
-type Props = { children: ReactNode }
+type Props = { children: ReactNode };
 
-export default function SocketProvider ({ children }: Props) {
-  const [backendstate, setbackendstate] = useState({})
+export default function SocketProvider({ children }: Props) {
+  const [backendstate, setbackendstate] = useState({});
 
   const options = {
     onMessage: (event: WebSocketEventMap['message']) => {
-      const data: string = typeof event.data == 'string' ? event.data : ""
-      const newstate: Backend = JSON.parse(data) // help lol
-      setbackendstate(newstate)
-    }
-  }
+      const data: string = typeof event.data == 'string' ? event.data : '';
+      const newstate = JSON.parse(data) as Backend;
+      setbackendstate(newstate);
+    },
+  };
 
-  const socket = useWebSocket("ws://localhost:10000/ws", options);
+  const socket = useWebSocket('ws://localhost:10000/ws', options);
 
   useEffect(() => {
-    socket.sendMessage(JSON.stringify({action: 'plsdata'}))
-  }, [])
+    socket.sendMessage(JSON.stringify({ action: 'plsdata' }));
+  }, []);
 
-  const contextdata = {socket, backendstate}
+  const contextdata = { socket, backendstate };
 
-  return (
-    <SocketContext.Provider value={contextdata}>
-      {children}
-    </SocketContext.Provider>
-  );
-};
+  return <SocketContext.Provider value={contextdata}>{children}</SocketContext.Provider>;
+}
