@@ -6,10 +6,10 @@ import type { WebSocketHook } from 'react-use-websocket/dist/lib/types';
 type Backend = Record<string, string | string[]>;
 interface Socket {
   socket: WebSocketHook<unknown> | null;
-  backendstate: Backend;
+  state: Backend;
 }
 
-const defaultSocket: Socket = { socket: null, backendstate: {} };
+const defaultSocket: Socket = { socket: null, state: {} };
 export const SocketContext = createContext(defaultSocket);
 
 interface Props {
@@ -32,7 +32,7 @@ export default function SocketProvider({ children }: Props) {
     socket.sendMessage(JSON.stringify({ action: 'plsdata' }));
   }, []);
 
-  const contextdata = { socket, backendstate: state };
+  const contextdata = { socket, state: state };
 
   return <SocketContext.Provider value={contextdata}>{children}</SocketContext.Provider>;
 }

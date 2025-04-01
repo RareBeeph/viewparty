@@ -16,14 +16,14 @@ const SelectForm = (props: { action: string; options: string }) => {
   };
 
   useEffect(() => {
-    if (socket.backendstate[props.options] && !selected) {
-      setSelected(socket.backendstate[props.options][0]);
+    if (socket.state[props.options] && !selected) {
+      setSelected(socket.state[props.options][0]);
     }
-  }, [socket.backendstate]);
+  }, [socket.state]);
 
-  if (socket.backendstate) {
-    if (socket.backendstate[props.options]) {
-      const inputs = socket.backendstate[props.options];
+  if (socket.state) {
+    if (socket.state[props.options]) {
+      const inputs = socket.state[props.options];
       if (typeof inputs === 'string') {
         return;
       }
