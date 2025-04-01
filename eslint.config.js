@@ -1,12 +1,14 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import pluginReact from 'eslint-plugin-react';
+import pluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import tseslint from 'typescript-eslint';
 import { join } from 'node:path';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   { files: ['**/*.{js,mjs,cjs,jsx,tsx}'] },
+  pluginPrettierRecommended,
   {
     rules: {
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],

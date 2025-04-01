@@ -1,10 +1,9 @@
-import { useContext, useEffect, useState } from "react"
-import { SocketContext } from "./socketcontext"
+import { useContext, useEffect, useState } from 'react';
+import { SocketContext } from './socketcontext';
 
-
-const SelectForm = (props: { action: string, options: string}) => {
-  const [selected, setSelected] = useState("")
-  const socket = useContext(SocketContext)
+const SelectForm = (props: { action: string; options: string }) => {
+  const [selected, setSelected] = useState('');
+  const socket = useContext(SocketContext);
 
   const submit = () => {
     const input = {
@@ -12,28 +11,36 @@ const SelectForm = (props: { action: string, options: string}) => {
       data: selected,
     };
     if (socket.socket !== null) {
-      socket.socket.sendMessage(JSON.stringify(input))
+      socket.socket.sendMessage(JSON.stringify(input));
     }
-  }
+  };
 
-  useEffect(()=>{
-    if(socket.backendstate[props.options] && !selected) {
-      setSelected(socket.backendstate[props.options][0])
+  useEffect(() => {
+    if (socket.backendstate[props.options] && !selected) {
+      setSelected(socket.backendstate[props.options][0]);
     }
-  }, [socket.backendstate])
+  }, [socket.backendstate]);
 
-  if(socket.backendstate){
-    if(socket.backendstate[props.options]){
-      const inputs = socket.backendstate[props.options]
-      if (typeof inputs === "string") {return}
+  if (socket.backendstate) {
+    if (socket.backendstate[props.options]) {
+      const inputs = socket.backendstate[props.options];
+      if (typeof inputs === 'string') {
+        return;
+      }
       return (
         <>
           <select onChange={e => setSelected(e.target.value)}>
-            {inputs.map((o, i) => {return <option key={i} value={o}>{o}</option>})}
+            {inputs.map((o, i) => {
+              return (
+                <option key={i} value={o}>
+                  {o}
+                </option>
+              );
+            })}
           </select>
           <button onClick={submit}>Submit</button>
         </>
-      )
+      );
     }
   }
 
@@ -42,7 +49,7 @@ const SelectForm = (props: { action: string, options: string}) => {
       <select onChange={e => setSelected(e.target.value)} />
       <button onClick={submit}>Submit</button>
     </>
-  )
-}
+  );
+};
 
-export default SelectForm
+export default SelectForm;
