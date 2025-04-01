@@ -4,21 +4,25 @@ import type { ReactNode } from 'react';
 import type { WebSocketHook } from 'react-use-websocket/dist/lib/types';
 
 type Backend = Record<string, string | string[]>;
-interface SocketStuff { socket: WebSocketHook<unknown> | null; backendstate: Backend }
+interface Socket {
+  socket: WebSocketHook<unknown> | null;
+  backendstate: Backend;
+}
 
-const stuff: SocketStuff = { socket: null, backendstate: {} };
-export const SocketContext = createContext(stuff);
+const defaultSocket: Socket = { socket: null, backendstate: {} };
+export const SocketContext = createContext(defaultSocket);
 
-interface Props { children: ReactNode }
+interface Props {
+  children: ReactNode;
+}
 
 export default function SocketProvider({ children }: Props) {
-  const [backendstate, setbackendstate] = useState({});
+  const [state, setState] = useState({});
 
   const options = {
     onMessage: (event: WebSocketEventMap['message']) => {
       const data: string = typeof event.data == 'string' ? event.data : '';
-      const newstate = JSON.parse(data) as Backend;
-      setbackendstate(newstate);
+      setState(JSON.parse(data));
     },
   };
 
@@ -28,7 +32,7 @@ export default function SocketProvider({ children }: Props) {
     socket.sendMessage(JSON.stringify({ action: 'plsdata' }));
   }, []);
 
-  const contextdata = { socket, backendstate };
+  const contextdata = { socket, backendstate: state };
 
   return <SocketContext.Provider value={contextdata}>{children}</SocketContext.Provider>;
 }
