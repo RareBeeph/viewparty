@@ -27,4 +27,5 @@ export default [
 
   { ignores: ['**/*.{js,jsx}'] },
   ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
 ];

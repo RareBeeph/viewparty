@@ -3,13 +3,13 @@ import useWebSocket from 'react-use-websocket';
 import type { ReactNode } from 'react';
 import type { WebSocketHook } from 'react-use-websocket/dist/lib/types';
 
-type Backend = { [key: string]: string | string[] };
-type SocketStuff = { socket: WebSocketHook<unknown> | null; backendstate: Backend };
+type Backend = Record<string, string | string[]>;
+interface SocketStuff { socket: WebSocketHook<unknown> | null; backendstate: Backend }
 
 const stuff: SocketStuff = { socket: null, backendstate: {} };
 export const SocketContext = createContext(stuff);
 
-type Props = { children: ReactNode };
+interface Props { children: ReactNode }
 
 export default function SocketProvider({ children }: Props) {
   const [backendstate, setbackendstate] = useState({});

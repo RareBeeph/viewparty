@@ -9,7 +9,7 @@
     "format": "prettier --write .",
     "check-format": "prettier --check .",
     "lint": "run-s type-check eslint",
-    "eslint": "eslint",
+    "eslint": "eslint --fix",
     "type-check": "tsc -b client",
     "fix": "eslint --fix",
     "dev": "vite serve client",
