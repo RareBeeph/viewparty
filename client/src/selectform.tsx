@@ -1,39 +1,37 @@
 import { useContext, useEffect, useState } from 'react';
 import { SocketContext } from './socketcontext';
 
-const SelectForm = (props: { action: string; options: string }) => {
+const SelectForm = ({ action, options }: { action: string; options: string }) => {
   const [selected, setSelected] = useState('');
-  const socket = useContext(SocketContext);
+  const { socket, state } = useContext(SocketContext);
 
   const submit = () => {
     const input = {
-      action: props.action,
+      action: action,
       data: selected,
     };
-    if (socket.socket !== null) {
-      socket.socket.sendMessage(JSON.stringify(input));
-    }
+    socket?.sendMessage(JSON.stringify(input));
   };
 
   useEffect(() => {
-    if (socket.state[props.options] && !selected) {
-      setSelected(socket.state[props.options][0]);
+    if (state[options] && !selected) {
+      setSelected(state[options][0]);
     }
-  }, [socket.state]);
+  }, [state]);
 
-  if (socket.state) {
-    if (socket.state[props.options]) {
-      const inputs = socket.state[props.options];
+  if (state) {
+    if (state[options]) {
+      const inputs = state[options];
       if (typeof inputs === 'string') {
         return;
       }
       return (
         <>
           <select onChange={e => setSelected(e.target.value)}>
-            {inputs.map((o, i) => {
+            {inputs.map((name, idx) => {
               return (
-                <option key={i} value={o}>
-                  {o}
+                <option key={idx} value={name}>
+                  {name}
                 </option>
               );
             })}

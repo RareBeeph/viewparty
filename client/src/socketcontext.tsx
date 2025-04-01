@@ -10,7 +10,7 @@ interface Socket {
 }
 
 const defaultSocket: Socket = { socket: null, state: {} };
-export const SocketContext = createContext(defaultSocket);
+export const SocketContext = createContext<Socket>(defaultSocket);
 
 interface Props {
   children: ReactNode;

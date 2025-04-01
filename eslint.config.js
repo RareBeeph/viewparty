@@ -2,16 +2,28 @@ import globals from 'globals';
 import pluginJs from '@eslint/js';
 import pluginReact from 'eslint-plugin-react';
 import pluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import pluginPreferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
 import tseslint from 'typescript-eslint';
 import { join } from 'node:path';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   { files: ['**/*.{js,mjs,cjs,jsx,tsx}'] },
-  pluginPrettierRecommended,
   {
     rules: {
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'prefer-arrow-functions/prefer-arrow-functions': [
+        'warn',
+        {
+          allowedNames: [],
+          allowNamedFunctions: false,
+          allowObjectProperties: false,
+          classPropertiesAllowed: false,
+          disallowPrototype: false,
+          returnStyle: 'unchanged',
+          singleReturnOnly: false,
+        },
+      ],
     },
     languageOptions: {
       globals: globals.browser,
@@ -21,7 +33,12 @@ export default [
       },
     },
     settings: { react: { version: 'detect' } },
+    plugins: {
+      'prefer-arrow-functions': pluginPreferArrowFunctions,
+    },
   },
+
+  pluginPrettierRecommended,
 
   pluginJs.configs.recommended,
   pluginReact.configs.flat.recommended,
