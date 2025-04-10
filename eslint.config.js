@@ -10,8 +10,11 @@ import { join } from 'node:path';
 export default [
   { files: ['**/*.{js,mjs,cjs,jsx,tsx}'] },
   {
+    files: ['**/*.{js,mjs,cjs,jsx,tsx}'],
     rules: {
+      '@typescript-eslint/await-thenable': 'off',
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      eqeqeq: ['error', 'always'],
       'prefer-arrow-functions/prefer-arrow-functions': [
         'warn',
         {
@@ -27,10 +30,6 @@ export default [
     },
     languageOptions: {
       globals: globals.browser,
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: join(import.meta.dirname, 'client'),
-      },
     },
     settings: { react: { version: 'detect' } },
     plugins: {
@@ -47,4 +46,13 @@ export default [
   { ignores: ['**/*.{js,jsx}'] },
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
+  {
+    languageOptions: {
+      globals: globals.browser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: join(import.meta.dirname, 'client'),
+      },
+    },
+  },
 ];

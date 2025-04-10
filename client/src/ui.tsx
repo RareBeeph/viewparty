@@ -7,7 +7,7 @@ const UI = () => {
     state: { inputs, videos },
   } = useContext(SocketContext);
 
-  if (![inputs, videos].every(Array.isArray)) {
+  if (![inputs, videos].every(e => typeof e === 'string')) {
     return null;
   }
 
