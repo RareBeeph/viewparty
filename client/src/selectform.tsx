@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { SocketContext } from './socketcontext';
 
-const SelectForm = ({ action, options }: { action: string; options: string }) => {
+const SelectForm = ({ action, options }: { action: string; options: string[] }) => {
   const [selected, setSelected] = useState('');
   const { socket, state } = useContext(SocketContext);
 
@@ -14,37 +14,26 @@ const SelectForm = ({ action, options }: { action: string; options: string }) =>
   };
 
   useEffect(() => {
-    if (state[options] && !selected) {
-      setSelected(state[options][0]);
+    if (options && !selected) {
+      setSelected(options[0]);
     }
   }, [state]);
 
-  if (state) {
-    if (state[options]) {
-      const inputs = state[options];
-      if (typeof inputs === 'string') {
-        return;
-      }
-      return (
-        <>
-          <select onChange={e => setSelected(e.target.value)}>
-            {inputs.map((name, idx) => {
-              return (
-                <option key={idx} value={name}>
-                  {name}
-                </option>
-              );
-            })}
-          </select>
-          <button onClick={submit}>Submit</button>
-        </>
-      );
-    }
+  if (!options) {
+    options = [];
   }
 
   return (
     <>
-      <select onChange={e => setSelected(e.target.value)} />
+      <select onChange={e => setSelected(e.target.value)}>
+        {options.map((name, idx) => {
+          return (
+            <option key={idx} value={name}>
+              {name}
+            </option>
+          );
+        })}
+      </select>
       <button onClick={submit}>Submit</button>
     </>
   );
