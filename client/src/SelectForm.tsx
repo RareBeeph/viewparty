@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { SocketContext } from './socketcontext';
+import { SocketContext } from './SocketProvider';
 
 const SelectForm = ({ action, options }: { action: string; options: string[] }) => {
   const [selected, setSelected] = useState('');

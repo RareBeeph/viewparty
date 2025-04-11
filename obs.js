@@ -75,6 +75,10 @@ class Obs {
   }
 
   async stopMedia() {
+    if (!this.inputName) {
+      return;
+    }
+
     await this.connection.call('TriggerMediaInputAction', {
       inputName: this.inputName,
       mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',

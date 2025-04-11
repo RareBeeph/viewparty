@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import SocketProvider from './socketcontext';
-import UI from './ui';
+import SocketProvider from './SocketProvider';
+import UI from './UI';
 
 const root = document.getElementById('root');
 
