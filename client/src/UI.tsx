@@ -2,7 +2,8 @@ import SelectForm from './SelectForm';
 import { useContext } from 'react';
 import { SocketContext } from './SocketProvider';
 import SkipButton from './SkipButton';
-import { Container, Row, Col } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap';
+import HelpModal from './HelpModal';
 
 const UI = () => {
   const {
@@ -15,19 +16,20 @@ const UI = () => {
 
   return (
     <>
-      <Container>
+      <HelpModal />
+
+      <Container className="mt-5">
         <Row>
-          <Col>
+          <Col className="border p-3 mx-3">
             <p>Current Input: {currentInput}</p>
             <SelectForm action="input" options={inputs} />
           </Col>
 
-          <Col>
+          <Col className="border p-3 mx-3">
             <p>Current Video: {currentVideo}</p>
-            <SelectForm action="next" options={videos} />
-
+            <SkipButton />
             <p>Next Video: {nextVideo}</p>
-            <SkipButton/>
+            <SelectForm action="next" options={videos} />
           </Col>
         </Row>
       </Container>

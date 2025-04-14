@@ -25,7 +25,7 @@ const SelectForm = ({ action, options }: { action: string; options: string[] }) 
 
   return (
     <>
-      <select onChange={e => setSelected(e.target.value)}>
+      <select className="form-select" onChange={e => setSelected(e.target.value)}>
         {options.map((name, idx) => {
           return (
             <option key={idx} value={name}>
@@ -34,7 +34,9 @@ const SelectForm = ({ action, options }: { action: string; options: string[] }) 
           );
         })}
       </select>
-      <button onClick={submit}>Submit</button>
+      <button className="btn btn-primary" onClick={submit}>
+        Submit
+      </button>
     </>
   );
 };
