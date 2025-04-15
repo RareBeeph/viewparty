@@ -12,7 +12,6 @@ export default [
   {
     files: ['**/*.{js,mjs,cjs,jsx,tsx}'],
     rules: {
-      '@typescript-eslint/await-thenable': 'off',
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       eqeqeq: ['error', 'always'],
       'prefer-arrow-functions/prefer-arrow-functions': [
@@ -28,10 +27,6 @@ export default [
         },
       ],
     },
-    languageOptions: {
-      globals: globals.browser,
-    },
-    settings: { react: { version: 'detect' } },
     plugins: {
       'prefer-arrow-functions': pluginPreferArrowFunctions,
     },
@@ -47,6 +42,7 @@ export default [
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   {
+    settings: { react: { version: 'detect' } },
     languageOptions: {
       globals: globals.browser,
       parserOptions: {
