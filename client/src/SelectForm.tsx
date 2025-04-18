@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
+import { Button, Form } from 'react-bootstrap';
 
 const SelectForm = ({ action, options }: { action: string; options: string[] }) => {
   const [selected, setSelected] = useState('');
@@ -25,7 +26,7 @@ const SelectForm = ({ action, options }: { action: string; options: string[] }) 
 
   return (
     <>
-      <select className="form-select" onChange={e => setSelected(e.target.value)}>
+      <Form.Select onChange={e => setSelected(e.target.value)}>
         {options.map((name, idx) => {
           return (
             <option key={idx} value={name}>
@@ -33,10 +34,10 @@ const SelectForm = ({ action, options }: { action: string; options: string[] }) 
             </option>
           );
         })}
-      </select>
-      <button className="btn btn-primary" onClick={submit}>
+      </Form.Select>
+      <Button variant="primary" onClick={submit}>
         Submit
-      </button>
+      </Button>
     </>
   );
 };

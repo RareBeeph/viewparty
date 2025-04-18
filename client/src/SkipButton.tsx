@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { SocketContext } from './SocketProvider';
+import { Button } from 'react-bootstrap';
 
 const SkipButton = () => {
   const { socket } = useContext(SocketContext);
@@ -13,9 +14,9 @@ const SkipButton = () => {
 
   return (
     <>
-      <button className="btn btn-primary" onClick={submit}>
+      <Button variant="primary" onClick={submit}>
         Skip
-      </button>
+      </Button>
     </>
   );
 };
