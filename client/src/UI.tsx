@@ -4,10 +4,11 @@ import { SocketContext } from './SocketProvider';
 import SkipButton from './SkipButton';
 import { Container, Row, Col } from 'react-bootstrap';
 import HelpModal from './HelpModal';
+import NextList from './NextList';
 
 const UI = () => {
   const {
-    state: { inputs, videos, currentInput, currentVideo, nextVideo },
+    state: { inputs, videos, currentInput, currentVideo },
   } = useContext(SocketContext);
 
   if (typeof inputs === 'string' || typeof videos === 'string') {
@@ -25,12 +26,18 @@ const UI = () => {
             <SelectForm action="input" options={inputs} />
           </Col>
 
-          <Col className="border p-3 mx-3">
+          {/* <Col className="border p-3 mx-3">
             <p>Current Video: {currentVideo}</p>
             <SkipButton />
             <p>Next Video: {nextVideo}</p>
             <SelectForm action="next" options={videos} />
-          </Col>
+          </Col> */}
+        </Row>
+        <Row className="border p-3 mx-3">
+          <p>Current Video: {currentVideo}</p>
+          <SkipButton />
+
+          <NextList />
         </Row>
       </Container>
     </>
