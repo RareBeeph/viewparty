@@ -3,10 +3,13 @@ import VideoEntry from './VideoEntry';
 import { Button, Row, Col } from 'react-bootstrap';
 import { SocketContext } from './SocketProvider';
 
+// This is a truly constant value that doesn't need to be computed on render,
+// so it's a good candidate to move out of the component and into module level
+const defaultState: string[] = [''];
+
 const NextList = () => {
   // this is gonna temporarily be the arbiter of the list, as opposed to storing it on the backend,
   // because i'll have to implement the functionality to store and refer to it in the backend
-  const defaultState: string[] = [''];
   const [videoList, setVideoList] = useState(defaultState);
   const {
     socket,
