@@ -7,8 +7,8 @@ import path from 'node:path';
 
 class Obs {
   connection = null;
-  connectedCallbackID = false;
-  disconnectedCallbackID = false;
+  mediaChangeInterval = null;
+  reconnectInterval = null;
   inputName = '';
   settings = {};
   nextVideo = '';
@@ -19,20 +19,22 @@ class Obs {
     this.connection = new OBSWebSocket();
   }
 
+  get connected() {
+    return this.connection.socket;
+  }
+
   get status() {
-    if (!this.connectedCallbackID) {
+    if (!this.connected) {
       return;
     }
 
-    return this.connection
-      .call('GetMediaInputStatus', {
-        inputName: this.inputName,
-      })
-      .catch(this.retryConnect.bind(this));
+    return this.connection.call('GetMediaInputStatus', {
+      inputName: this.inputName,
+    });
   }
 
   get inputList() {
-    if (!this.connectedCallbackID) {
+    if (!this.connected) {
       return;
     }
 
@@ -40,77 +42,55 @@ class Obs {
       .call('GetInputList', {
         inputKind: 'ffmpeg_source',
       })
-      .then(response => response.inputs)
-      .catch(this.retryConnect.bind(this));
+      .then(response => response.inputs);
   }
 
   get data() {
-    if (!this.connectedCallbackID) {
+    if (!this.connected) {
       return;
     }
 
     const na = 'n/a';
-    return this.inputList
-      .then(inputs => {
-        return {
-          inputs: inputs.map(value => value.inputName),
-          currentVideo: this.settings.local_file ? path.basename(this.settings.local_file) : na,
-          nextVideo: this.nextVideo || na,
-          currentInput: this.inputName || na,
-          videos: this.videos,
-        };
-      })
-      .catch(this.retryConnect.bind(this));
+    return this.inputList.then(inputs => {
+      return {
+        inputs: inputs.map(value => value.inputName),
+        currentVideo: this.settings.local_file ? path.basename(this.settings.local_file) : na,
+        nextVideo: this.nextVideo || na,
+        currentInput: this.inputName || na,
+        videos: this.videos,
+      };
+    });
   }
 
   get mediaStopped() {
-    if (!this.inputName || !this.connectedCallbackID) {
+    if (!this.inputName || !this.connected) {
       return false;
     }
 
-    return this.status
-      .then(currentStatus => !currentStatus['mediaDuration'])
-      .catch(this.retryConnect.bind(this));
+    return this.status.then(currentStatus => !currentStatus['mediaDuration']);
   }
 
   async connect() {
-    try {
-      await this.connection.connect('ws://127.0.0.1:4455');
-      this.connectedCallbackID = setInterval(
-        async function () {
-          if (await this.mediaStopped) {
-            await this.changeMedia();
-          }
-        }.bind(this),
-        5000,
-      );
-      console.log('Connected successfully.');
-    } catch {
-      this.retryConnect();
-    }
+    await this.connection.connect('ws://127.0.0.1:4455');
+    this.mediaChangeInterval = setInterval(async () => {
+      if (this.connected && (await this.mediaStopped)) {
+        await this.changeMedia();
+      }
+    }, 5000);
+
+    this.reconnectInterval = setInterval(this.retryConnect, 5000);
+    console.log('Connected successfully.');
   }
 
   async retryConnect() {
-    clearInterval(this.connectedCallbackID);
-    this.connectedCallbackID = false;
-
-    // don't repeat yourself
-    if (this.disconnectedCallbackID) {
-      return;
-    }
-
     console.log('Failed to connect to OBS. Retrying in 5 seconds.');
-    this.disconnectedCallbackID = setTimeout(
-      async function () {
-        this.disconnectedCallbackID = false;
-        this.connect();
-      }.bind(this),
-      5000,
-    );
+    if (!this.connected) {
+      this.connect();
+    }
   }
 
   async changeInput(inputName) {
-    if (!this.connectedCallbackID) {
+    if (!this.mediaChangeInterval) {
       return;
     }
 
@@ -135,24 +115,20 @@ class Obs {
   }
 
   async stopMedia() {
-    if (!this.inputName || !this.connectedCallbackID) {
+    if (!this.inputName || !this.connected) {
       return;
     }
 
-    try {
-      await this.connection.call('TriggerMediaInputAction', {
-        inputName: this.inputName,
-        mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
-      });
-    } catch {
-      this.retryConnect();
-    }
+    await this.connection.call('TriggerMediaInputAction', {
+      inputName: this.inputName,
+      mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
+    });
   }
 
   async changeMedia() {
     // TODO: pick a new next video if we fail due to nonexistent file
 
-    if (!this.inputName || !this.connectedCallbackID) {
+    if (!this.inputName || !this.connected) {
       return;
     }
 
@@ -186,7 +162,7 @@ class Obs {
   }
 
   update() {
-    if (!this.connectedCallbackID) {
+    if (!this.connected) {
       return;
     }
 
