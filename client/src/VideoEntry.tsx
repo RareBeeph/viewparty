@@ -8,16 +8,17 @@ const VideoEntry = ({ name, updateSelf }: { name: string; updateSelf: (name: str
   // state, it's probably worth giving it its own hook just for brevity's sake
   const { videos } = useAppState();
 
-  if (typeof videos === 'string' || !videos) {
-    return null;
-  }
-
+  // hopefully moving this up doesn't break anything
   useEffect(() => {
-    if (videos && !selected) {
+    if (typeof videos !== 'string' && videos && !selected) {
       setSelected(videos[0]);
       updateSelf(videos[0]);
     }
   }, [videos]);
+
+  if (typeof videos === 'string' || !videos) {
+    return null;
+  }
 
   // Why return an empty fragment instead of null?
   // if (!videos) {
