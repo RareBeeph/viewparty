@@ -17,6 +17,12 @@ class Obs {
 
   constructor() {
     this.connection = new OBSWebSocket();
+    this.mediaChangeInterval = setInterval(async () => {
+      if (this.connected && (await this.mediaStopped)) {
+        await this.changeMedia();
+      }
+    }, 5000);
+    this.reconnectInterval = setInterval(() => this.retryConnect(), 5000);
   }
 
   get connected() {
@@ -28,7 +34,7 @@ class Obs {
       return;
     }
 
-    return this.connection.call('GetMediaInputStatus', {
+    return this.call('GetMediaInputStatus', {
       inputName: this.inputName,
     });
   }
@@ -38,11 +44,9 @@ class Obs {
       return;
     }
 
-    return this.connection
-      .call('GetInputList', {
-        inputKind: 'ffmpeg_source',
-      })
-      .then(response => response.inputs);
+    return this.call('GetInputList', {
+      inputKind: 'ffmpeg_source',
+    }).then(response => response.inputs);
   }
 
   get data() {
@@ -70,20 +74,22 @@ class Obs {
     return this.status.then(currentStatus => !currentStatus['mediaDuration']);
   }
 
-  async connect() {
-    await this.connection.connect('ws://127.0.0.1:4455');
-    this.mediaChangeInterval = setInterval(async () => {
-      if (this.connected && (await this.mediaStopped)) {
-        await this.changeMedia();
-      }
-    }, 5000);
+  async call(...args) {
+    try {
+      return this.connection.call(...args);
+    } catch {}
+  }
 
-    this.reconnectInterval = setInterval(this.retryConnect, 5000);
-    console.log('Connected successfully.');
+  async connect() {
+    try {
+      await this.connection.connect('ws://127.0.0.1:4455');
+      console.log('Connected successfully.');
+    } catch {
+      console.log('Failed to connect to OBS. Retrying in 5 seconds.');
+    }
   }
 
   async retryConnect() {
-    console.log('Failed to connect to OBS. Retrying in 5 seconds.');
     if (!this.connected) {
       this.connect();
     }
@@ -98,20 +104,16 @@ class Obs {
       this.stopMedia();
     }
 
-    try {
-      const input = await this.connection.call('GetInputSettings', { inputName });
+    const input = await this.call('GetInputSettings', { inputName });
 
-      const settingsResp = await this.connection.call('GetInputDefaultSettings', {
-        inputKind: input.inputKind,
-      });
+    const settingsResp = await this.call('GetInputDefaultSettings', {
+      inputKind: input.inputKind,
+    });
 
-      this.inputName = inputName;
-      this.settings = { ...settingsResp.defaultInputSettings, ...input.inputSettings };
+    this.inputName = inputName;
+    this.settings = { ...settingsResp.defaultInputSettings, ...input.inputSettings };
 
-      this.changeMedia();
-    } catch {
-      this.retryConnect();
-    }
+    this.changeMedia();
   }
 
   async stopMedia() {
@@ -119,7 +121,7 @@ class Obs {
       return;
     }
 
-    await this.connection.call('TriggerMediaInputAction', {
+    await this.call('TriggerMediaInputAction', {
       inputName: this.inputName,
       mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
     });
