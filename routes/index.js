@@ -29,38 +29,36 @@ router.ws(
     });
 
     ws.on('message', async function (msg) {
-      try {
-        const input = JSON.parse(msg);
+      const input = JSON.parse(msg);
 
-        console.log(input);
+      console.log(input);
 
-        switch (input.action) {
-          case 'input':
-            try {
-              await obs.changeInput(input.data);
-            } catch {
-              console.log('Change input failed');
-            }
-            break;
+      switch (input.action) {
+        case 'input':
+          try {
+            await obs.changeInput(input.data);
+          } catch {
+            console.log('Change input failed');
+          }
+          break;
 
-          case 'next':
+        case 'next':
+          try {
             obs.nextVideo = input.data;
             await obs.update();
-            break;
+          } catch {}
+          break;
 
-          case 'skip':
-            await obs.stopMedia();
-            await obs.changeMedia();
-            break;
+        case 'skip':
+          await obs.stopMedia();
+          await obs.changeMedia();
+          break;
 
-          case 'plsdata':
-            ws.send(JSON.stringify(await obs.data));
-            break;
+        case 'plsdata':
+          ws.send(JSON.stringify(await obs.data));
+          break;
 
-          default:
-        }
-      } catch (err) {
-        next(err);
+        default:
       }
     });
   }),
