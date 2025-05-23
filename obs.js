@@ -30,30 +30,18 @@ class Obs {
   }
 
   get status() {
-    if (!this.connected) {
-      return;
-    }
-
     return this.call('GetMediaInputStatus', {
       inputName: this.inputName,
     });
   }
 
   get inputList() {
-    if (!this.connected) {
-      return;
-    }
-
     return this.call('GetInputList', {
       inputKind: 'ffmpeg_source',
     }).then(response => response.inputs);
   }
 
   get data() {
-    if (!this.connected) {
-      return;
-    }
-
     const na = 'n/a';
     return this.inputList.then(inputs => {
       return {
@@ -67,7 +55,7 @@ class Obs {
   }
 
   get mediaStopped() {
-    if (!this.inputName || !this.connected) {
+    if (!this.inputName) {
       return false;
     }
 
@@ -75,9 +63,11 @@ class Obs {
   }
 
   async call(...args) {
-    try {
-      return this.connection.call(...args);
-    } catch {}
+    if (!this.connected) {
+      throw new Error('Not connected');
+    }
+
+    return this.connection.call(...args);
   }
 
   async connect() {
@@ -117,7 +107,7 @@ class Obs {
   }
 
   async stopMedia() {
-    if (!this.inputName || !this.connected) {
+    if (!this.inputName) {
       return;
     }
 
@@ -130,7 +120,7 @@ class Obs {
   async changeMedia() {
     // TODO: pick a new next video if we fail due to nonexistent file
 
-    if (!this.inputName || !this.connected) {
+    if (!this.inputName) {
       return;
     }
 
@@ -164,10 +154,6 @@ class Obs {
   }
 
   update() {
-    if (!this.connected) {
-      return;
-    }
-
     this.clients.forEach(client => {
       this.data.then(currentData => client.send(JSON.stringify(currentData)));
     });
