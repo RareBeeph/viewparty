@@ -150,13 +150,14 @@ class Obs {
 
     this.nextVideo = files[randomInt(files.length)];
 
-    this.update();
+    await this.update();
   }
 
-  update() {
-    this.clients.forEach(client => {
-      this.data.then(currentData => client.send(JSON.stringify(currentData)));
-    });
+  async update() {
+    const currentData = await this.data;
+    for (const client of this.clients) {
+      client.send(JSON.stringify(currentData));
+    }
   }
 }
 

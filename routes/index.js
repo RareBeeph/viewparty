@@ -43,19 +43,17 @@ router.ws(
           break;
 
         case 'next':
-          try {
-            obs.nextVideo = input.data;
-            await obs.update();
-          } catch {}
+          obs.nextVideo = input.data;
+          await obs.update().catch(() => console.log('Next video failed'));
           break;
 
         case 'skip':
-          await obs.stopMedia();
-          await obs.changeMedia();
+          await obs.stopMedia().catch(() => console.log('Stop media failed'));
+          await obs.changeMedia().catch(() => console.log('Change media failed'));
           break;
 
         case 'plsdata':
-          ws.send(JSON.stringify(await obs.data));
+          ws.send(JSON.stringify(await obs.data.catch(() => console.log('Plsdata failed'))));
           break;
 
         default:
