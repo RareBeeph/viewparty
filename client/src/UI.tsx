@@ -8,11 +8,15 @@ import NextList from './NextList';
 
 const UI = () => {
   const {
-    state: { inputs, videos, currentInput, currentVideo },
+    state: { inputs, videos, currentInput, currentVideo, err },
   } = useContext(SocketContext);
 
   if (typeof inputs === 'string' || typeof videos === 'string') {
     return null;
+  }
+
+  if (err) {
+    return <h1>{err}</h1>;
   }
 
   return (

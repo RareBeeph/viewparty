@@ -52,6 +52,10 @@ app.use(function (err, req, res, _next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+
+  console.log('used');
+  // TODO: make this communicate properly with the frontend
+  // req.ws.send('ERROR: ' + err.message);
 });
 
 export default app;

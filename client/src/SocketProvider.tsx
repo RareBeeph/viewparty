@@ -22,8 +22,14 @@ export default function SocketProvider({ children }: Props) {
   const options = {
     onMessage: (event: WebSocketEventMap['message']) => {
       const data: string = typeof event.data === 'string' ? event.data : '';
-      setState(JSON.parse(data) as Backend);
-      console.log(JSON.parse(data));
+
+      if (data.startsWith('ERROR')) {
+        setState({ err: data, ...state } as Backend);
+        console.log(data);
+      } else {
+        setState(JSON.parse(data) as Backend);
+        console.log(JSON.parse(data));
+      }
     },
   };
 

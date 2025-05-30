@@ -91,7 +91,7 @@ class Obs {
     }
 
     if (this.inputName) {
-      this.stopMedia();
+      await this.stopMedia();
     }
 
     const input = await this.call('GetInputSettings', { inputName });
@@ -103,7 +103,7 @@ class Obs {
     this.inputName = inputName;
     this.settings = { ...settingsResp.defaultInputSettings, ...input.inputSettings };
 
-    this.changeMedia();
+    await this.changeMedia();
   }
 
   async stopMedia() {
