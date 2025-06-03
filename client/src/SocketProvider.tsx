@@ -1,5 +1,4 @@
-import { createContext,/*, useEffect, useState */
-useEffect} from 'react';
+import { createContext /*, useEffect, useState */, useEffect } from 'react';
 // import useWebSocket from 'react-use-websocket';
 import OBSWebSocket from 'obs-websocket-js';
 import type { ReactNode } from 'react';
@@ -11,8 +10,9 @@ import type { ReactNode } from 'react';
 //   state: Backend;
 // }
 
-const defaultSocket: OBSWebSocket | null = null //Socket = { socket: null, state: {} };
-export const SocketContext = createContext<OBSWebSocket | null>(defaultSocket);
+const socket = new OBSWebSocket();
+socket.connect();
+export const SocketContext = createContext<OBSWebSocket>(socket);
 
 interface Props {
   children: ReactNode;
@@ -32,15 +32,9 @@ export default function SocketProvider({ children }: Props) {
   //       setState(JSON.parse(data) as Backend);
   //       console.log(JSON.parse(data));
   //     }
+  //
   //   },
   // };
-
-  const socket = new OBSWebSocket() // useWebSocket('ws://localhost:10000/ws', options);
-
-  useEffect(() => {
-    socket.connect()
-  }, [])
-
 
   // useEffect(() => {
   //   socket.connect()
