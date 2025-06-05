@@ -1,4 +1,4 @@
-import { createContext /*, useEffect, useState */, useEffect } from 'react';
+import { createContext } from 'react';
 // import useWebSocket from 'react-use-websocket';
 import OBSWebSocket from 'obs-websocket-js';
 import type { ReactNode } from 'react';
@@ -12,6 +12,8 @@ import type { ReactNode } from 'react';
 
 const socket = new OBSWebSocket();
 socket.connect();
+
+
 export const SocketContext = createContext<OBSWebSocket>(socket);
 
 interface Props {
@@ -19,8 +21,6 @@ interface Props {
 }
 
 export default function SocketProvider({ children }: Props) {
-  // const [state, setState] = useState({});
-
   // const options = {
   //   onMessage: (event: WebSocketEventMap['message']) => {
   //     const data: string = typeof event.data === 'string' ? event.data : '';
