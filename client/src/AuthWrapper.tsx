@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useState } from 'react';
+import { ReactNode, useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
 
 interface Props {
@@ -9,16 +9,25 @@ export default function AuthWrapper({ children }: Props) {
   const obs = useContext(SocketContext);
   const [connected, setConnected] = useState(false);
 
-  if (!obs.connection) {
-    console.log('Attempted to pass through auth wrapper while OBS websocket is null.');
-    return;
-  }
+  useEffect(() => {
+    if (!obs.connection) {
+      console.log('Attempted to run AuthWrapper Effect callback while OBS websocket is null.');
+      return;
+    }
 
-  // This needs to be wrapped in an effect, right now every time this component
-  // rerenders you add another callback to that event
-  obs.connection.on('Identified', () => {
-    setConnected(true);
-  });
+    obs.connection.on('Identified', () => {
+      setConnected(true);
+    });
+
+    return (() => {
+      if (!obs.connection) {
+        console.log('Attempted to run AuthWrapper Effect destructor while OBS websocket is null.')
+        return;
+      }
+
+      obs.connection.removeListener('Identified')
+    })
+  }, [obs.connection])
 
   if (!connected) {
     return;

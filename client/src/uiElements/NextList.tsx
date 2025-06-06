@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import VideoEntry from './VideoEntry';
 import { Button, Row, Col } from 'react-bootstrap';
-import { SocketContext } from './SocketProvider';
+import { SocketContext } from '../SocketProvider';
 
 const NextList = () => {
   // this is gonna temporarily be the arbiter of the list, as opposed to storing it on the backend,
@@ -23,17 +23,10 @@ const NextList = () => {
   };
 
   const submit = () => {
-    // const input = {
-    //   action: 'next',
-    //   data: videoList[0],
-    // };
-    // socket?.sendMessage(JSON.stringify(input));
     obs
       .stopMedia()
       .then(
-        () => obs.changeMedia() /*.catch(() => {
-          console.log('obs.changeMedia() failed in NextList.tsx');
-        })*/,
+        () => obs.changeMedia(),
       )
       .catch(() => {
         console.log('obs.stopMedia() failed in NextList.tsx');

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { SocketContext } from './SocketProvider';
+import { SocketContext } from '../SocketProvider';
 import { Button, Form } from 'react-bootstrap';
 
 const SelectForm = ({ action, options }: { action: string; options: string[] }) => {
@@ -7,11 +7,6 @@ const SelectForm = ({ action, options }: { action: string; options: string[] }) 
   const obs = useContext(SocketContext);
 
   const submit = () => {
-    // const input = {
-    //   action: action,
-    //   data: selected,
-    // };
-    // socket?.sendMessage(JSON.stringify(input));
     switch (action) {
       case 'input':
         obs.changeInput(selected).catch(() => {

@@ -1,13 +1,4 @@
-// import { randomInt } from 'node:crypto';
-//  import { realpathSync } from 'node:fs';
-// import { readdir } from 'node:fs/promises';
-// import { extname } from 'node:path';
 import { OBSRequestTypes, OBSWebSocket } from 'obs-websocket-js';
-// import path from 'node:path';
-
-// const randomInt = (max:number) => {
-//   return Math.floor(Math.random()*max)
-// }
 
 class Obs {
   connection: OBSWebSocket | null = null;
@@ -17,7 +8,6 @@ class Obs {
   settings: Record<'local_file', string> = { local_file: '' };
   nextVideo = '';
   videos: string[] = [];
-  // clients = new Set();
 
   constructor() {
     this.connection = new OBSWebSocket();
@@ -62,19 +52,6 @@ class Obs {
     return this.call('GetInputList', {
       inputKind: 'ffmpeg_source',
     }).then(response => response.inputs as Record<'inputName', string>[]);
-  }
-
-  get data() {
-    const na = 'n/a';
-    return this.inputList.then(inputs => {
-      return {
-        inputs: inputs.map(value => value.inputName),
-        currentVideo: this.settings.local_file, // ? path.basename(this.settings.local_file) : na,
-        nextVideo: this.nextVideo || na,
-        currentInput: this.inputName || na,
-        videos: this.videos,
-      };
-    });
   }
 
   get mediaStopped() {
@@ -132,7 +109,6 @@ class Obs {
       inputKind: input.inputKind,
     });
 
-    // console.log('wiwiwi')
     this.inputName = inputName;
     this.settings = Object.assign(this.settings, {
       ...settingsResp.defaultInputSettings,
@@ -154,55 +130,9 @@ class Obs {
   }
 
   changeMedia() {
-    // too many filesystem operations for browser
+    // TODO
     return;
-    /*
-    // TODO: pick a new next video if we fail due to nonexistent file
-    if (!this.connection) {
-      console.log('Attempted to change media while OBS websocket object is null');
-      return;
-    }
-
-    if (!this.inputName) {
-      return;
-    }
-
-    const allowed_filetypes = ['.webm', '.mkv'];
-    const files = (await readdir('./videos')).filter(f => allowed_filetypes.includes(extname(f)));
-    this.videos = files;
-
-    if (!this.nextVideo) {
-      this.nextVideo = files[randomInt(files.length)];
-    }
-
-    this.settings['local_file'] = realpathSync('./videos/' + this.nextVideo);
-
-    // observation: if the same video that just finished is picked again, this does nothing
-    try {
-      await this.connection.call('SetInputSettings', {
-        inputName: this.inputName,
-        inputSettings: this.settings,
-      });
-    } catch {
-      console.log('Failed to change media.');
-
-      // future media change attempts short-circuit on empty input name
-      // so this assign means we only fail once
-      this.inputName = '';
-    }
-
-    this.nextVideo = files[randomInt(files.length)];
-
-    // await this.update();
-    */
   }
-
-  // async update() {
-  //   const currentData = await this.data;
-  //   for (const client of this.clients) {
-  //     client.send(JSON.stringify(currentData));
-  //   }
-  // }
 }
 
 export default Obs;

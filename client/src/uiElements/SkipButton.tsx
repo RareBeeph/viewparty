@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { SocketContext } from './SocketProvider';
+import { SocketContext } from '../SocketProvider';
 import { Button } from 'react-bootstrap';
 
 const SkipButton = () => {
