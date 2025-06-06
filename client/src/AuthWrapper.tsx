@@ -19,15 +19,15 @@ export default function AuthWrapper({ children }: Props) {
       setConnected(true);
     });
 
-    return (() => {
+    return () => {
       if (!obs.connection) {
-        console.log('Attempted to run AuthWrapper Effect destructor while OBS websocket is null.')
+        console.log('Attempted to run AuthWrapper Effect destructor while OBS websocket is null.');
         return;
       }
 
-      obs.connection.removeListener('Identified')
-    })
-  }, [obs.connection])
+      obs.connection.removeListener('Identified');
+    };
+  }, [obs.connection]);
 
   if (!connected) {
     return;
