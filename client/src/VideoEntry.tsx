@@ -1,12 +1,11 @@
 import { Form } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
-import { useAppState } from './hooks';
+import { useState, useEffect, useContext } from 'react';
+// import { useAppState } from './hooks';
+import { SocketContext } from './SocketProvider';
 
 const VideoEntry = ({ name, updateSelf }: { name: string; updateSelf: (name: string) => void }) => {
   const [selected, setSelected] = useState(name);
-  // You tend to do the same destructuring assignment in every component for
-  // state, it's probably worth giving it its own hook just for brevity's sake
-  const { videos } = useAppState();
+  const { videos } = useContext(SocketContext);
 
   // hopefully moving this up doesn't break anything
   useEffect(() => {
@@ -34,7 +33,7 @@ const VideoEntry = ({ name, updateSelf }: { name: string; updateSelf: (name: str
         updateSelf(e.target.value);
       }}
     >
-      {videos.map((name, idx) => {
+      {videos.map((name: string, idx: number) => {
         return (
           <option key={idx} value={name}>
             {name}

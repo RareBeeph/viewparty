@@ -4,21 +4,30 @@ import { Button, Form } from 'react-bootstrap';
 
 const SelectForm = ({ action, options }: { action: string; options: string[] }) => {
   const [selected, setSelected] = useState('');
-  const { socket, state } = useContext(SocketContext);
+  const obs = useContext(SocketContext);
 
   const submit = () => {
-    const input = {
-      action: action,
-      data: selected,
-    };
-    socket?.sendMessage(JSON.stringify(input));
+    // const input = {
+    //   action: action,
+    //   data: selected,
+    // };
+    // socket?.sendMessage(JSON.stringify(input));
+    switch (action) {
+      case 'input':
+        obs.changeInput(selected)
+        break;
+      case 'next':
+
+        break;
+      default:
+    }
   };
 
   useEffect(() => {
     if (options && !selected) {
       setSelected(options[0]);
     }
-  }, [state]);
+  }, [options, !(!selected)]);
 
   if (!options) {
     options = [];

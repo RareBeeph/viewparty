@@ -8,10 +8,7 @@ const NextList = () => {
   // because i'll have to implement the functionality to store and refer to it in the backend
   const defaultState: string[] = [''];
   const [videoList, setVideoList] = useState(defaultState);
-  const {
-    socket,
-    state: { currentVideo },
-  } = useContext(SocketContext);
+  const obs = useContext(SocketContext);
 
   const updateOne = (idx: number, name: string) => {
     setVideoList(videoList.slice(0, idx).concat([name], videoList.slice(idx + 1)));
@@ -26,18 +23,19 @@ const NextList = () => {
   };
 
   const submit = () => {
-    const input = {
-      action: 'next',
-      data: videoList[0],
-    };
-    socket?.sendMessage(JSON.stringify(input));
+    // const input = {
+    //   action: 'next',
+    //   data: videoList[0],
+    // };
+    // socket?.sendMessage(JSON.stringify(input));
+    obs.stopMedia().then(() => obs.changeMedia())
   };
 
   useEffect(() => {
     if (videoList.length > 1) {
       removeOne(0);
     }
-  }, [currentVideo]);
+  }, [obs.settings.local_file]);
   useEffect(submit, [videoList[0]]);
 
   return (

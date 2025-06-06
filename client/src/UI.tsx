@@ -1,8 +1,11 @@
 // import SelectForm from './SelectForm';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
 import HelpModal from './HelpModal';
 import { Col, Container, Row } from 'react-bootstrap';
+import SelectForm from './SelectForm';
+import SkipButton from './SkipButton';
+import NextList from './NextList';
 // import SkipButton from './SkipButton';
 // import { Container, Row, Col } from 'react-bootstrap';
 // import HelpModal from './HelpModal';
@@ -12,7 +15,12 @@ const UI = () => {
   // const {
   //   state: { inputs, videos, currentInput, currentVideo, err },
   // } = useContext(SocketContext);
-  const socket = useContext(SocketContext)
+  const obs = useContext(SocketContext)
+  const [ options, setOptions ] = useState([] as Record<'inputName',string>[])
+
+  useEffect(() => {
+    obs.inputList.then(inputList => setOptions(inputList))
+  })
 
   // if (typeof inputs === 'string' || typeof videos === 'string') {
   //   return null;
@@ -22,10 +30,6 @@ const UI = () => {
   //   return <h1>{err}</h1>;
   // }
 
-  socket.call('GetInputList', {
-    inputKind: 'ffmpeg_source',
-  }).then(response => console.log(response.inputs));
-
   return (
     <>
       <HelpModal />
@@ -33,8 +37,8 @@ const UI = () => {
       <Container className="mt-5">
         <Row>
           <Col className="border p-3 mx-3">
-            <p>Current Input: n/a {/* currentInput */}</p>
-            {/* <SelectForm action="input" options={inputs} /> */}
+            <p>Current Input: { obs.inputName || 'n/a' }</p>
+            <SelectForm action="input" options={options.map((e) => e.inputName)} />
           </Col>
 
           {/* <Col className="border p-3 mx-3">
@@ -46,9 +50,9 @@ const UI = () => {
         </Row>
         <Row className="border p-3 mx-3">
           <p>Current Video: n/a {/* currentVideo */}</p>
-          {/* <SkipButton /> */}
+          { <SkipButton /> }
 
-          {/* <NextList /> */}
+          { <NextList /> }
         </Row>
       </Container>
     </>

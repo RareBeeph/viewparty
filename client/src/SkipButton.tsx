@@ -3,13 +3,10 @@ import { SocketContext } from './SocketProvider';
 import { Button } from 'react-bootstrap';
 
 const SkipButton = () => {
-  const { socket } = useContext(SocketContext);
+  const obs = useContext(SocketContext);
 
   const submit = () => {
-    const input = {
-      action: 'skip',
-    };
-    socket?.sendMessage(JSON.stringify(input));
+    obs.changeMedia()
   };
 
   return (

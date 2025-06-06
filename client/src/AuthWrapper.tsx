@@ -6,12 +6,17 @@ interface Props {
 }
 
 export default function AuthWrapper({ children }: Props) {
-  const socket = useContext(SocketContext);
+  const obs = useContext(SocketContext);
   const [connected, setConnected] = useState(false);
+
+  if (!obs.connection) {
+    console.log('Attempted to pass through auth wrapper while OBS websocket is null.')
+    return;
+  }
 
   // This needs to be wrapped in an effect, right now every time this component
   // rerenders you add another callback to that event
-  socket.on('Identified', () => {
+  obs.connection.on('Identified', () => {
     setConnected(true);
   });
 

@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 // import useWebSocket from 'react-use-websocket';
-import OBSWebSocket from 'obs-websocket-js';
 import type { ReactNode } from 'react';
+import Obs from './Obs';
 // import type { WebSocketHook } from 'react-use-websocket/dist/lib/types';
 
 // type Backend = Record<string, string | string[]>;
@@ -10,11 +10,10 @@ import type { ReactNode } from 'react';
 //   state: Backend;
 // }
 
-const socket = new OBSWebSocket();
+const socket = new Obs();
 socket.connect();
 
-
-export const SocketContext = createContext<OBSWebSocket>(socket);
+export const SocketContext = createContext<Obs>(socket);
 
 interface Props {
   children: ReactNode;
