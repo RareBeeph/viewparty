@@ -1,9 +1,11 @@
 import { OBSRequestTypes, OBSWebSocket } from 'obs-websocket-js';
 
+type Timer = ReturnType<typeof setTimeout>;
+
 class Obs {
   connection: OBSWebSocket | null = null;
-  mediaChangeInterval: NodeJS.Timeout | null = null;
-  reconnectInterval: NodeJS.Timeout | null = null;
+  mediaChangeInterval: Timer | null = null;
+  reconnectInterval: Timer | null = null;
   inputName = '';
   settings: Record<'local_file', string> = { local_file: '' };
   nextVideo = '';
