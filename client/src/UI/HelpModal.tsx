@@ -4,8 +4,12 @@ import { useState } from 'react';
 const HelpModal = () => {
   const [show, setShow] = useState(false);
 
-  const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
+  // For small wrappers like this it's not really worth the visual noise of
+  // giving these handlers a persistent reference, since they're recreated
+  // every time the component renders anyways. Best practice is to keep them
+  // inline on the props
+  // const handleShow = () => setShow(true);
+  // const handleClose = () => setShow(false);
 
   return (
     <>
@@ -16,14 +20,14 @@ const HelpModal = () => {
           </Col>
 
           <Col className="px-4 align-content-center">
-            <Button variant="light" className="float-end" onClick={handleShow}>
+            <Button variant="light" className="float-end" onClick={() => setShow(true)}>
               Help
             </Button>
           </Col>
         </Row>
       </Container>
 
-      <Modal className="text-black" show={show} onHide={handleClose}>
+      <Modal className="text-black" show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Help</Modal.Title>
         </Modal.Header>

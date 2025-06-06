@@ -26,6 +26,8 @@ export default [
           singleReturnOnly: false,
         },
       ],
+
+      'react/jsx-no-useless-fragment': ['error', {allowExpressions: true}],
     },
     plugins: {
       'prefer-arrow-functions': pluginPreferArrowFunctions,

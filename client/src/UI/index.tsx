@@ -1,7 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
-import { SocketContext } from './SocketProvider';
-import { HelpModal, SelectForm, SkipButton, NextList } from './uiElements';
+import { SocketContext } from '../SocketProvider';
 import { Col, Container, Row } from 'react-bootstrap';
+
+import HelpModal from './HelpModal';
+import NextList from './NextList';
+import SelectForm from './SelectForm';
+import SkipButton from './SkipButton';
 
 const UI = () => {
   const obs = useContext(SocketContext);

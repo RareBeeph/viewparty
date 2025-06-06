@@ -5,16 +5,10 @@ import { Button } from 'react-bootstrap';
 const SkipButton = () => {
   const obs = useContext(SocketContext);
 
-  const submit = () => {
-    obs.changeMedia();
-  };
-
   return (
-    <>
-      <Button variant="primary" onClick={submit}>
-        Skip
-      </Button>
-    </>
+    <Button variant="primary" onClick={() => obs.changeMedia()}>
+      Skip
+    </Button>
   );
 };
 
