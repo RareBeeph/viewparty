@@ -28,7 +28,16 @@ const NextList = () => {
     //   data: videoList[0],
     // };
     // socket?.sendMessage(JSON.stringify(input));
-    obs.stopMedia().then(() => obs.changeMedia())
+    obs
+      .stopMedia()
+      .then(
+        () => obs.changeMedia() /*.catch(() => {
+          console.log('obs.changeMedia() failed in NextList.tsx');
+        })*/,
+      )
+      .catch(() => {
+        console.log('obs.stopMedia() failed in NextList.tsx');
+      });
   };
 
   useEffect(() => {

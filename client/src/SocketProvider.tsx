@@ -11,7 +11,9 @@ import Obs from './Obs';
 // }
 
 const socket = new Obs();
-socket.connect();
+socket.connect().catch(() => {
+  console.log('Obs.connect() failed in SocketProvider.tsx');
+});
 
 export const SocketContext = createContext<Obs>(socket);
 

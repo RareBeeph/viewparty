@@ -10,7 +10,7 @@ export default function AuthWrapper({ children }: Props) {
   const [connected, setConnected] = useState(false);
 
   if (!obs.connection) {
-    console.log('Attempted to pass through auth wrapper while OBS websocket is null.')
+    console.log('Attempted to pass through auth wrapper while OBS websocket is null.');
     return;
   }
 

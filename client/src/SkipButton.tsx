@@ -6,7 +6,7 @@ const SkipButton = () => {
   const obs = useContext(SocketContext);
 
   const submit = () => {
-    obs.changeMedia()
+    obs.changeMedia();
   };
 
   return (

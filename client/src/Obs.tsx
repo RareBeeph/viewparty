@@ -14,19 +14,38 @@ class Obs {
   mediaChangeInterval: NodeJS.Timeout | null = null;
   reconnectInterval: NodeJS.Timeout | null = null;
   inputName = '';
-  settings: Record<'local_file', string> = {local_file: ''};
+  settings: Record<'local_file', string> = { local_file: '' };
   nextVideo = '';
   videos: string[] = [];
   // clients = new Set();
 
   constructor() {
     this.connection = new OBSWebSocket();
-    this.mediaChangeInterval = setInterval(async () => {
-      if (this.connected && (await this.mediaStopped)) {
-        await this.changeMedia();
+    this.mediaChangeInterval = setInterval(() => {
+      const stoppedpromise = this.mediaStopped;
+
+      // goofy shi cuz it might be false outright
+      if (typeof stoppedpromise === 'boolean') {
+        return;
       }
+
+      stoppedpromise
+        .then((mediaStopped: boolean) => {
+          if (this.connected && mediaStopped) {
+            this.changeMedia();
+          }
+          return;
+        })
+        .catch(() => {
+          console.log('mediaStopped getter failed in Obs.tsx');
+        });
     }, 5000);
-    this.reconnectInterval = setInterval(() => this.retryConnect(), 5000);
+    this.reconnectInterval = setInterval(() => {
+      this.retryConnect().catch(() => {
+        console.log('Obs.retryConnect() failed in Obs.tsx reconnect interval callback');
+      });
+      return;
+    }, 5000);
   }
 
   get connected() {
@@ -63,11 +82,14 @@ class Obs {
       return false;
     }
 
-    return this.status.then(currentStatus => !currentStatus['mediaDuration']);
+    return this.status.then(currentStatus => !currentStatus.mediaDuration);
   }
 
   // function signature yoinked from definition of connection.call()
-  async call<Type extends keyof OBSRequestTypes>(requestType: Type, requestData?: OBSRequestTypes[Type]) {
+  async call<Type extends keyof OBSRequestTypes>(
+    requestType: Type,
+    requestData?: OBSRequestTypes[Type],
+  ) {
     if (!this.connection || !this.connected) {
       throw new Error('Not connected');
     }
@@ -91,7 +113,7 @@ class Obs {
 
   async retryConnect() {
     if (!this.connected) {
-      this.connect();
+      await this.connect();
     }
   }
 
@@ -112,9 +134,12 @@ class Obs {
 
     // console.log('wiwiwi')
     this.inputName = inputName;
-    this.settings = Object.assign(this.settings, { ...settingsResp.defaultInputSettings, ...input.inputSettings });
+    this.settings = Object.assign(this.settings, {
+      ...settingsResp.defaultInputSettings,
+      ...input.inputSettings,
+    });
 
-    await this.changeMedia();
+    this.changeMedia();
   }
 
   async stopMedia() {
@@ -128,7 +153,7 @@ class Obs {
     });
   }
 
-  async changeMedia() {
+  changeMedia() {
     // too many filesystem operations for browser
     return;
     /*

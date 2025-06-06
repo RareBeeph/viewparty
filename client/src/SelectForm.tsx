@@ -14,10 +14,11 @@ const SelectForm = ({ action, options }: { action: string; options: string[] }) 
     // socket?.sendMessage(JSON.stringify(input));
     switch (action) {
       case 'input':
-        obs.changeInput(selected)
+        obs.changeInput(selected).catch(() => {
+          console.log('Obs.changeInput() failed in SelectForm.tsx');
+        });
         break;
       case 'next':
-
         break;
       default:
     }
@@ -27,7 +28,7 @@ const SelectForm = ({ action, options }: { action: string; options: string[] }) 
     if (options && !selected) {
       setSelected(options[0]);
     }
-  }, [options, !(!selected)]);
+  }, [options, !!selected]);
 
   if (!options) {
     options = [];

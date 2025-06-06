@@ -15,12 +15,16 @@ const UI = () => {
   // const {
   //   state: { inputs, videos, currentInput, currentVideo, err },
   // } = useContext(SocketContext);
-  const obs = useContext(SocketContext)
-  const [ options, setOptions ] = useState([] as Record<'inputName',string>[])
+  const obs = useContext(SocketContext);
+  const [options, setOptions] = useState([] as Record<'inputName', string>[]);
 
   useEffect(() => {
-    obs.inputList.then(inputList => setOptions(inputList))
-  })
+    obs.inputList
+      .then(inputList => setOptions(inputList))
+      .catch(() => {
+        console.log('Obs.inputList() failed in UI.tsx Effect callback');
+      });
+  });
 
   // if (typeof inputs === 'string' || typeof videos === 'string') {
   //   return null;
@@ -37,8 +41,8 @@ const UI = () => {
       <Container className="mt-5">
         <Row>
           <Col className="border p-3 mx-3">
-            <p>Current Input: { obs.inputName || 'n/a' }</p>
-            <SelectForm action="input" options={options.map((e) => e.inputName)} />
+            <p>Current Input: {obs.inputName || 'n/a'}</p>
+            <SelectForm action="input" options={options.map(e => e.inputName)} />
           </Col>
 
           {/* <Col className="border p-3 mx-3">
@@ -50,9 +54,9 @@ const UI = () => {
         </Row>
         <Row className="border p-3 mx-3">
           <p>Current Video: n/a {/* currentVideo */}</p>
-          { <SkipButton /> }
+          {<SkipButton />}
 
-          { <NextList /> }
+          {<NextList />}
         </Row>
       </Container>
     </>
