@@ -17,6 +17,7 @@ export default function AuthWrapper({ children }: Props) {
 
     obs.connection.on('Identified', () => {
       setConnected(true);
+      console.log('Identified.');
     });
 
     return () => {
@@ -25,6 +26,7 @@ export default function AuthWrapper({ children }: Props) {
         return;
       }
 
+      setConnected(false);
       obs.connection.removeListener('Identified');
     };
   }, [obs.connection]);

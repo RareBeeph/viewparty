@@ -13,15 +13,9 @@ class Obs {
 
   constructor() {
     this.connection = new OBSWebSocket();
+
     this.mediaChangeInterval = setInterval(() => {
-      const stoppedpromise = this.mediaStopped;
-
-      // goofy shi cuz it might be false outright
-      if (typeof stoppedpromise === 'boolean') {
-        return;
-      }
-
-      stoppedpromise
+      this.isMediaStopped()
         .then((mediaStopped: boolean) => {
           if (this.connected && mediaStopped) {
             this.changeMedia();
@@ -29,39 +23,43 @@ class Obs {
           return;
         })
         .catch(() => {
-          console.log('mediaStopped getter failed in Obs.tsx');
+          console.log('mediaStopped getter failed in Obs.ts media change interval callback');
         });
     }, 5000);
+
     this.reconnectInterval = setInterval(() => {
       this.retryConnect().catch(() => {
-        console.log('Obs.retryConnect() failed in Obs.tsx reconnect interval callback');
+        console.log('Obs.retryConnect() failed in Obs.ts reconnect interval callback');
       });
       return;
     }, 5000);
   }
 
   get connected() {
-    return this.connection?.identified;
+    return this.connection?.identified ?? false;
   }
 
-  get status() {
+  async getStatus() {
     return this.call('GetMediaInputStatus', {
       inputName: this.inputName,
     });
   }
 
-  get inputList() {
-    return this.call('GetInputList', {
+  async getInputList() {
+    const response = await this.call('GetInputList', {
       inputKind: 'ffmpeg_source',
-    }).then(response => response.inputs as Record<'inputName', string>[]);
+    });
+
+    return (response.inputs ?? []) as Record<'inputName', string>[];
   }
 
-  get mediaStopped() {
+  async isMediaStopped() {
     if (!this.inputName) {
       return false;
     }
 
-    return this.status.then(currentStatus => !currentStatus.mediaDuration);
+    const currentStatus = await this.getStatus();
+    return !currentStatus.mediaDuration;
   }
 
   // function signature yoinked from definition of connection.call()

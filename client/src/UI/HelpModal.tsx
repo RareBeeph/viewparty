@@ -4,13 +4,6 @@ import { useState } from 'react';
 const HelpModal = () => {
   const [show, setShow] = useState(false);
 
-  // For small wrappers like this it's not really worth the visual noise of
-  // giving these handlers a persistent reference, since they're recreated
-  // every time the component renders anyways. Best practice is to keep them
-  // inline on the props
-  // const handleShow = () => setShow(true);
-  // const handleClose = () => setShow(false);
-
   return (
     <>
       <Container className="bg-secondary">

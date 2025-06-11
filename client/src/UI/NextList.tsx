@@ -3,13 +3,9 @@ import VideoEntry from './VideoEntry';
 import { Button, Row, Col } from 'react-bootstrap';
 import { SocketContext } from '../SocketProvider';
 
-// This is a constant value and irrelevant to the lifecycle of the component
-// so it's better off outside of the component body
 const defaultState: string[] = [''];
 
 const NextList = () => {
-  // this is gonna temporarily be the arbiter of the list, as opposed to storing it on the backend,
-  // because i'll have to implement the functionality to store and refer to it in the backend
   const [videoList, setVideoList] = useState(defaultState);
   const obs = useContext(SocketContext);
 

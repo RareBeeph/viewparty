@@ -12,10 +12,11 @@ const UI = () => {
   const [options, setOptions] = useState([] as Record<'inputName', string>[]);
 
   useEffect(() => {
-    obs.inputList
+    obs
+      .getInputList()
       .then(inputList => setOptions(inputList))
       .catch(() => {
-        console.log('Obs.inputList() failed in UI.tsx Effect callback');
+        console.log('Obs.getInputList() failed in UI Effect callback');
       });
   });
 
