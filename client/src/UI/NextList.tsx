@@ -25,9 +25,7 @@ const NextList = () => {
     obs
       .stopMedia()
       .then(() => obs.changeMedia())
-      .catch(() => {
-        console.log('obs.stopMedia() failed in NextList.tsx');
-      });
+      .catch(console.error);
   };
 
   useEffect(() => {

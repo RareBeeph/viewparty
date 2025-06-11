@@ -11,9 +11,6 @@ const UI = () => {
   const obs = useContext(SocketContext);
   const [options, setOptions] = useState([] as Record<'inputName', string>[]);
 
-  // Your previous effect caused this component to infinitely re-render
-  // because it had no dependency list (second parameter). We DO want to
-  // continually update this information, but not every few milliseconds.
   useEffect(() => {
     const interval = setInterval(() => {
       obs
@@ -22,7 +19,7 @@ const UI = () => {
         .catch(console.error);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, []); // TODO: rerender on obs.inputName change
 
   return (
     <>

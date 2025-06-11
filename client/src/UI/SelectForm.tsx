@@ -9,9 +9,7 @@ const SelectForm = ({ action, options }: { action: string; options: string[] }) 
   const submit = () => {
     switch (action) {
       case 'input':
-        obs.changeInput(selected).catch(() => {
-          console.log('Obs.changeInput() failed in SelectForm.tsx');
-        });
+        obs.changeInput(selected).catch(console.error);
         break;
       case 'next':
         break;

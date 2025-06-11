@@ -3,9 +3,7 @@ import type { ReactNode } from 'react';
 import Obs from './Obs';
 
 const socket = new Obs();
-socket.connect().catch(() => {
-  console.log('Obs.connect() failed in SocketProvider.tsx');
-});
+socket.connect().catch(console.error);
 
 export const SocketContext = createContext<Obs>(socket);
 

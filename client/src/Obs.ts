@@ -21,8 +21,8 @@ class Obs {
             this.changeMedia();
           }
           return;
-        }) // A lot of the information you're manually logging is already in the exception
-        .catch(err => console.error('media change interval failure', err));
+        })
+        .catch(err => console.error('Media change interval failure', err));
     }, 5000);
 
     this.reconnectInterval = setInterval(() => {
@@ -57,7 +57,6 @@ class Obs {
     return !currentStatus.mediaDuration;
   }
 
-  // function signature yoinked from definition of connection.call()
   async call<Type extends keyof OBSRequestTypes>(
     requestType: Type,
     requestData?: OBSRequestTypes[Type],
