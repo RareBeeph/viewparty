@@ -21,16 +21,12 @@ class Obs {
             this.changeMedia();
           }
           return;
-        })
-        .catch(() => {
-          console.log('mediaStopped getter failed in Obs.ts media change interval callback');
-        });
+        }) // A lot of the information you're manually logging is already in the exception
+        .catch(err => console.error('media change interval failure', err));
     }, 5000);
 
     this.reconnectInterval = setInterval(() => {
-      this.retryConnect().catch(() => {
-        console.log('Obs.retryConnect() failed in Obs.ts reconnect interval callback');
-      });
+      this.retryConnect().catch(err => console.error('Obs.retryConnect() failure', err));
       return;
     }, 5000);
   }
@@ -39,19 +35,18 @@ class Obs {
     return this.connection?.identified ?? false;
   }
 
-  async getStatus() {
-    return this.call('GetMediaInputStatus', {
+  getStatus = async () =>
+    this.call('GetMediaInputStatus', {
       inputName: this.inputName,
     });
-  }
 
-  async getInputList() {
+  getInputList = async () => {
     const response = await this.call('GetInputList', {
       inputKind: 'ffmpeg_source',
     });
 
     return (response.inputs ?? []) as Record<'inputName', string>[];
-  }
+  };
 
   async isMediaStopped() {
     if (!this.inputName) {
@@ -83,8 +78,8 @@ class Obs {
     try {
       await this.connection.connect('ws://127.0.0.1:4455');
       console.log('Connected successfully.');
-    } catch {
-      console.log('Failed to connect to OBS. Retrying in 5 seconds.');
+    } catch (err) {
+      console.error('Failed to connect to OBS. Retrying in 5 seconds.', err);
     }
   }
 

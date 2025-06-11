@@ -11,7 +11,7 @@ export default function AuthWrapper({ children }: Props) {
 
   useEffect(() => {
     if (!obs.connection) {
-      console.log('Attempted to run AuthWrapper Effect callback while OBS websocket is null.');
+      console.error('Attempted to run AuthWrapper Effect callback while OBS websocket is null.');
       return;
     }
 
@@ -22,8 +22,9 @@ export default function AuthWrapper({ children }: Props) {
 
     return () => {
       if (!obs.connection) {
-        console.log('Attempted to run AuthWrapper Effect destructor while OBS websocket is null.');
-        return;
+        return console.error(
+          'Attempted to run AuthWrapper Effect destructor while OBS websocket is null.',
+        );
       }
 
       setConnected(false);
