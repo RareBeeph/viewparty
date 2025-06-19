@@ -215,3 +215,8 @@ videos/*.mkv
 
 # ignore my shenanigans
 videos/.tool-versions
+
+# Wails gitignore
+build/bin
+node_modules
+wails_template/frontend/dist

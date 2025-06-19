@@ -6,8 +6,7 @@ import AuthWrapper from './AuthWrapper';
 
 const root = document.getElementById('root');
 
-if (root !== null) {
-  ReactDOM.createRoot(root).render(
+  ReactDOM.createRoot(root!).render(
     <React.StrictMode>
       <SocketProvider>
         <AuthWrapper>
@@ -16,4 +15,3 @@ if (root !== null) {
       </SocketProvider>
     </React.StrictMode>,
   );
-}
