@@ -1,17 +1,18 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import SocketProvider from './SocketProvider';
 import UI from './UI';
 import AuthWrapper from './AuthWrapper';
 
-const root = document.getElementById('root');
+const container = document.getElementById('root');
+const root = createRoot(container!);
 
-  ReactDOM.createRoot(root!).render(
-    <React.StrictMode>
-      <SocketProvider>
-        <AuthWrapper>
-          <UI />
-        </AuthWrapper>
-      </SocketProvider>
-    </React.StrictMode>,
-  );
+root.render(
+  <React.StrictMode>
+    <SocketProvider>
+      <AuthWrapper>
+        <UI />
+      </AuthWrapper>
+    </SocketProvider>
+  </React.StrictMode>,
+);
