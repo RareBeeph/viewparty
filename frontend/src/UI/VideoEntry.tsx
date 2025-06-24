@@ -7,7 +7,7 @@ const VideoEntry = ({ name, updateSelf }: { name: string; updateSelf: (name: str
   const { videos } = useContext(SocketContext);
 
   useEffect(() => {
-    if (videos && videos[0] && !selected) {
+    if (videos?.[0] && !selected) {
       setSelected(videos[0]);
       updateSelf(videos[0]);
     }
