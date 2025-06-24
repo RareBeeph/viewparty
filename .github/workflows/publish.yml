@@ -15,5 +15,7 @@ jobs:
           node-version: 'latest'
       - name: Install dependencies
         run: npm install
+        working-directory: frontend
       - name: eslint
         run: npm run lint
+        working-directory: frontend
