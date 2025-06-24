@@ -21,7 +21,7 @@ const SelectForm = ({ action, options }: { action: string; options: string[] }) 
     if (options && !selected) {
       setSelected(options[0]);
     }
-  }, [options, !!selected]);
+  }, [options, selected]);
 
   if (!options) {
     options = [];

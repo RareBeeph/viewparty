@@ -15,23 +15,30 @@ export default function AuthWrapper({ children }: Props) {
       return;
     }
 
-    obs.connection.on('Identified', () => {
+    if (obs.connection.identified) {
+      console.log('already identified');
       setConnected(true);
-    });
+    }
 
-    return () => {
-      if (!obs.connection) {
-        return console.error(
-          'Attempted to run AuthWrapper Effect destructor while OBS websocket is null.',
-        );
-      }
-
-      setConnected(false);
-      obs.connection.removeListener('Identified');
+    const onIdentify = () => {
+      console.log('identified');
+      setConnected(true);
     };
-  }, [obs.connection]);
+
+    const onClose = () => {
+      console.log('closed');
+      setConnected(false);
+    };
+
+    obs.connection.off('Identified'); // remove any residual listeners (not sure if this is necessary)
+    obs.connection.on('Identified', onIdentify);
+
+    obs.connection.off('ConnectionClosed');
+    obs.connection.on('ConnectionClosed', onClose);
+  }, [obs.connection]); // run once, unless the reference to obs.connection changes (i.e. from null to not null)
 
   if (!connected) {
+    console.log('not connected yet');
     return;
   }
 

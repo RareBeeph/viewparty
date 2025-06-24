@@ -19,7 +19,7 @@ const UI = () => {
         .catch(console.error);
     }, 5000);
     return () => clearInterval(interval);
-  }, []); // TODO: rerender on obs.inputName change
+  }, [obs]); // TODO: rerender on obs.inputName change
 
   return (
     <>

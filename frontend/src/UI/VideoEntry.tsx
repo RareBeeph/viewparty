@@ -7,11 +7,11 @@ const VideoEntry = ({ name, updateSelf }: { name: string; updateSelf: (name: str
   const { videos } = useContext(SocketContext);
 
   useEffect(() => {
-    if (typeof videos !== 'string' && videos && !selected) {
+    if (videos && videos[0] && !selected) {
       setSelected(videos[0]);
       updateSelf(videos[0]);
     }
-  }, [videos]);
+  }, [videos, selected, updateSelf]);
 
   if (typeof videos === 'string' || !videos) {
     return null;

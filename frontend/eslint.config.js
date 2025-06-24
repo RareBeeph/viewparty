@@ -1,6 +1,7 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import pluginReact from 'eslint-plugin-react';
+import pluginReactHooks from 'eslint-plugin-react-hooks';
 import pluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import pluginPreferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
 import tseslint from 'typescript-eslint';
@@ -27,7 +28,7 @@ export default [
         },
       ],
 
-      'react/jsx-no-useless-fragment': ['error', {allowExpressions: true}],
+      'react/jsx-no-useless-fragment': ['error', { allowExpressions: true }],
     },
     plugins: {
       'prefer-arrow-functions': pluginPreferArrowFunctions,
@@ -39,6 +40,15 @@ export default [
   pluginJs.configs.recommended,
   pluginReact.configs.flat.recommended,
   pluginReact.configs.flat['jsx-runtime'],
+
+  {
+    files: ['**/*.{js,mjs,cjs,jsx,tsx}'],
+    plugins: { 'react-hooks': pluginReactHooks },
+    rules: {
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+    },
+  },
 
   { ignores: ['**/*.{js,jsx}'] },
   ...tseslint.configs.recommendedTypeChecked,
@@ -53,4 +63,6 @@ export default [
       },
     },
   },
+
+  { ignores: ['./wailsjs'] },
 ];
