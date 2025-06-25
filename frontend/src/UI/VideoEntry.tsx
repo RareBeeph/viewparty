@@ -23,6 +23,7 @@ const VideoEntry = ({ name, updateSelf }: { name: string; updateSelf: (name: str
         setSelected(e.target.value);
         updateSelf(e.target.value);
       }}
+      value={name}
     >
       {videos.map((name: string, idx: number) => {
         return (

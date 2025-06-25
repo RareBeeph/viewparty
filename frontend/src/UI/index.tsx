@@ -5,7 +5,6 @@ import { Col, Container, Row } from 'react-bootstrap';
 import HelpModal from './HelpModal';
 import NextList from './NextList';
 import SelectForm from './SelectForm';
-import SkipButton from './SkipButton';
 
 const UI = () => {
   const obs = useContext(SocketContext);
@@ -33,8 +32,10 @@ const UI = () => {
           </Col>
         </Row>
         <Row className="border p-3 mx-3">
-          <p>Current Video: n/a</p>
-          <SkipButton />
+          <p>
+            Current Video:{' '}
+            {obs.settings.local_file.slice(obs.settings.local_file.lastIndexOf('/') + 1) || 'n/a'}
+          </p>
           <NextList />
         </Row>
       </Container>

@@ -2,7 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
+	"path/filepath"
 )
 
 // App struct
@@ -21,7 +22,33 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
+func (a *App) GetVideos() []string {
+	dir, err := os.ReadDir("./videos")
+
+	if err != nil {
+		println(err.Error())
+		return []string{}
+	}
+
+	videos := []string{}
+	for _, entry := range dir {
+		if entry.Name()[0] == '.' {
+			continue
+		}
+
+		videos = append(videos, entry.Name())
+	}
+
+	return videos
+}
+
+func (a *App) GetBasePath() string {
+	abs, err := filepath.Abs(".")
+
+	if err != nil {
+		println(err.Error())
+		return ""
+	}
+
+	return abs + "/videos/"
 }

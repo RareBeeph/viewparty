@@ -1,4 +1,5 @@
 import { OBSRequestTypes, OBSWebSocket } from 'obs-websocket-js';
+import { GetVideos, GetBasePath } from '../wailsjs/go/main/App.js';
 
 type Timer = ReturnType<typeof setTimeout>;
 
@@ -8,7 +9,7 @@ class Obs {
   reconnectInterval: Timer | null = null;
   inputName = '';
   settings: Record<'local_file', string> = { local_file: '' };
-  nextVideo = '';
+  queue: string[] = [];
   videos: string[] = [];
 
   constructor() {
@@ -18,7 +19,7 @@ class Obs {
       this.isMediaStopped()
         .then((mediaStopped: boolean) => {
           if (this.connected && mediaStopped) {
-            this.changeMedia();
+            this.changeMedia().catch(console.error);
           }
           return;
         })
@@ -109,7 +110,7 @@ class Obs {
       ...input.inputSettings,
     });
 
-    this.changeMedia();
+    await this.changeMedia();
   }
 
   async stopMedia() {
@@ -123,8 +124,47 @@ class Obs {
     });
   }
 
-  changeMedia() {
-    // TODO
+  async changeMedia() {
+    if (!this.inputName) {
+      return;
+    }
+
+    const allowed_filetypes = ['.webm', '.mkv'];
+
+    // subbed in shenanigans in place of Node function
+    const files = (await GetVideos()).filter(file =>
+      allowed_filetypes
+        .map(filetype => file.endsWith(filetype))
+        .reduce((acc, curr) => acc || curr, false),
+    );
+    this.videos = files;
+
+    // shenanigans in place of Node function
+    const randomInt = (max: number) => Math.floor(max * Math.random());
+
+    if (this.queue.length == 0) {
+      this.queue = [files[randomInt(files.length)]];
+    }
+
+    // also replacing Node function
+    this.settings.local_file = (await GetBasePath()) + this.queue[0];
+
+    // observation: if the same video that just finished is picked again, this does nothing
+    try {
+      await this.connection?.call('SetInputSettings', {
+        inputName: this.inputName,
+        inputSettings: this.settings,
+      });
+    } catch {
+      console.log('Failed to change media.');
+
+      // future media change attempts short-circuit on empty input name
+      // so this assign means we only fail once
+      this.inputName = '';
+    }
+
+    this.queue.shift();
+
     return;
   }
 }
