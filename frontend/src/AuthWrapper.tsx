@@ -37,6 +37,19 @@ export default function AuthWrapper({ children }: Props) {
     obs.connection.on('ConnectionClosed', onClose);
   }, [obs.connection]); // run once, unless the reference to obs.connection changes (i.e. from null to not null)
 
+  useEffect(() => {
+    const reconnectInterval = setInterval(() => {
+      if (!obs.connected) {
+        obs.connect().catch(err => console.error('Obs.retryConnect() failure', err));
+      }
+      return;
+    }, 5000);
+
+    return () => {
+      clearInterval(reconnectInterval);
+    };
+  }, [obs]);
+
   if (!connected) {
     console.log('not connected yet');
     return;

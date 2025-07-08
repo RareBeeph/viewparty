@@ -6,12 +6,13 @@ const VideoEntry = ({ name, updateSelf }: { name: string; updateSelf: (name: str
   const [selected, setSelected] = useState(name);
   const { videos } = useContext(SocketContext);
 
+  const firstvideo = videos?.[0];
   useEffect(() => {
-    if (videos?.[0] && !selected) {
+    if (firstvideo && !selected) {
       setSelected(videos[0]);
       updateSelf(videos[0]);
     }
-  }, [videos, selected, updateSelf]);
+  }, [videos, firstvideo, selected, updateSelf]);
 
   if (typeof videos === 'string' || !videos) {
     return null;

@@ -1,35 +1,15 @@
 import { OBSRequestTypes, OBSWebSocket } from 'obs-websocket-js';
-import { GetVideos, GetBasePath } from '../wailsjs/go/main/App.js';
 
-type Timer = ReturnType<typeof setTimeout>;
+// type Timer = ReturnType<typeof setTimeout>;
 
 class Obs {
   connection: OBSWebSocket | null = null;
-  mediaChangeInterval: Timer | null = null;
-  reconnectInterval: Timer | null = null;
   inputName = '';
   settings: Record<'local_file', string> = { local_file: '' };
-  queue: string[] = [];
   videos: string[] = [];
 
   constructor() {
     this.connection = new OBSWebSocket();
-
-    this.mediaChangeInterval = setInterval(() => {
-      this.isMediaStopped()
-        .then((mediaStopped: boolean) => {
-          if (this.connected && mediaStopped) {
-            this.changeMedia().catch(console.error);
-          }
-          return;
-        })
-        .catch(err => console.error('Media change interval failure', err));
-    }, 5000);
-
-    this.reconnectInterval = setInterval(() => {
-      this.retryConnect().catch(err => console.error('Obs.retryConnect() failure', err));
-      return;
-    }, 5000);
   }
 
   get connected() {
@@ -83,16 +63,10 @@ class Obs {
     }
   }
 
-  async retryConnect() {
-    if (!this.connected) {
-      await this.connect();
-    }
-  }
-
   async changeInput(inputName: string) {
-    if (!this.mediaChangeInterval) {
-      return;
-    }
+    // if (!mediaChangeInterval) {
+    //   return;
+    // }
 
     if (this.inputName) {
       await this.stopMedia();
@@ -110,7 +84,7 @@ class Obs {
       ...input.inputSettings,
     });
 
-    await this.changeMedia();
+    // await this.changeMedia();
   }
 
   async stopMedia() {
@@ -122,50 +96,6 @@ class Obs {
       inputName: this.inputName,
       mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
     });
-  }
-
-  async changeMedia() {
-    if (!this.inputName) {
-      return;
-    }
-
-    const allowed_filetypes = ['.webm', '.mkv'];
-
-    // subbed in shenanigans in place of Node function
-    const files = (await GetVideos()).filter(file =>
-      allowed_filetypes
-        .map(filetype => file.endsWith(filetype))
-        .reduce((acc, curr) => acc || curr, false),
-    );
-    this.videos = files;
-
-    // shenanigans in place of Node function
-    const randomInt = (max: number) => Math.floor(max * Math.random());
-
-    if (this.queue.length == 0) {
-      this.queue = [files[randomInt(files.length)]];
-    }
-
-    // also replacing Node function
-    this.settings.local_file = (await GetBasePath()) + this.queue[0];
-
-    // observation: if the same video that just finished is picked again, this does nothing
-    try {
-      await this.connection?.call('SetInputSettings', {
-        inputName: this.inputName,
-        inputSettings: this.settings,
-      });
-    } catch {
-      console.log('Failed to change media.');
-
-      // future media change attempts short-circuit on empty input name
-      // so this assign means we only fail once
-      this.inputName = '';
-    }
-
-    this.queue.shift();
-
-    return;
   }
 }
 
