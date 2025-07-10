@@ -15,7 +15,7 @@ const NextList = () => {
   };
 
   const addBelow = (idx: number) => {
-    setQueue(queue.slice(0, idx + 1).concat([''], queue.slice(idx + 1)));
+    setQueue(queue.slice(0, idx + 1).concat([obs.videos?.[0] || ''], queue.slice(idx + 1)));
   };
 
   const removeOne = (idx: number) => {

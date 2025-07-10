@@ -9,12 +9,12 @@ const VideoEntry = ({ name, updateSelf }: { name: string; updateSelf: (name: str
   const firstvideo = videos?.[0];
   useEffect(() => {
     if (firstvideo && !selected) {
-      setSelected(videos[0]);
-      updateSelf(videos[0]);
+      setSelected(firstvideo);
+      updateSelf(firstvideo);
     }
   }, [videos, firstvideo, selected, updateSelf]);
 
-  if (typeof videos === 'string' || !videos) {
+  if (!videos) {
     return null;
   }
 
