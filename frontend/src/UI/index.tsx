@@ -1,24 +1,27 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { SocketContext } from '../SocketProvider';
 import { Col, Container, Row } from 'react-bootstrap';
 
 import HelpModal from './HelpModal';
 import NextList from './NextList';
 import SelectForm from './SelectForm';
+import { getInputList } from '../Obs';
 
 const UI = () => {
-  const obs = useContext(SocketContext);
+  const [{ connection, inputName, settings }] = useContext(SocketContext);
   const [options, setOptions] = useState([] as Record<'inputName', string>[]);
 
+  const inputListCallback = useCallback(() => {
+    getInputList(connection)
+      .then(list => setOptions(list))
+      .catch(console.error);
+  }, [connection]);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      obs
-        .getInputList()
-        .then(list => setOptions(list))
-        .catch(console.error);
-    }, 5000);
+    inputListCallback(); // so we refresh our input list immediately
+    const interval = setInterval(inputListCallback, 5000);
     return () => clearInterval(interval);
-  }, [obs]); // TODO: rerender on obs.inputName change
+  }, [inputListCallback]);
 
   return (
     <>
@@ -27,14 +30,14 @@ const UI = () => {
       <Container className="mt-5">
         <Row>
           <Col className="border p-3 mx-3">
-            <p>Current Input: {obs.inputName || 'n/a'}</p>
+            <p>Current Input: {inputName || 'n/a'}</p>
             <SelectForm action="input" options={options.map(e => e.inputName)} />
           </Col>
         </Row>
         <Row className="border p-3 mx-3">
           <p>
             Current Video:{' '}
-            {obs.settings.local_file.slice(obs.settings.local_file.lastIndexOf('/') + 1) || 'n/a'}
+            {settings.local_file.slice(settings.local_file.lastIndexOf('/') + 1) || 'n/a'}
           </p>
           <NextList />
         </Row>

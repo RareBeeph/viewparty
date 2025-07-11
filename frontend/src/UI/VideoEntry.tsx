@@ -1,10 +1,16 @@
 import { Form } from 'react-bootstrap';
-import { useState, useEffect, useContext } from 'react';
-import { SocketContext } from '../SocketProvider';
+import { useState, useEffect } from 'react';
 
-const VideoEntry = ({ name, updateSelf }: { name: string; updateSelf: (name: string) => void }) => {
+const VideoEntry = ({
+  name,
+  videos,
+  updateSelf,
+}: {
+  name: string;
+  videos: string[];
+  updateSelf: (name: string) => void;
+}) => {
   const [selected, setSelected] = useState(name);
-  const { videos } = useContext(SocketContext);
 
   const firstvideo = videos?.[0];
   useEffect(() => {
