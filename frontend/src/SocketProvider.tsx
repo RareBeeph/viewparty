@@ -13,10 +13,7 @@ export interface SocketData {
 const data: SocketData = { connection: socket, inputName: '', settings: { local_file: '' } };
 const defaultContext: [SocketData, React.Dispatch<React.SetStateAction<SocketData>>] = [
   data,
-  value => {
-    console.error(value);
-    return;
-  }, // intentionally nonfunctional. this should never be used
+  console.error,
 ];
 export const SocketContext = createContext(defaultContext);
 

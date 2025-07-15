@@ -2,8 +2,8 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import VideoEntry from './VideoEntry';
 import { Button, Row, Col } from 'react-bootstrap';
 import { SocketContext } from '../SocketProvider';
-import { GetBasePath, GetVideos } from '../../wailsjs/go/main/App';
-import { call, isMediaStopped, stopMedia } from '../Obs';
+import { GetVideos } from '../../wailsjs/go/main/App';
+import { changeMedia, isMediaStopped, stopMedia } from '../Obs';
 
 const defaultQueue: string[] = [];
 
@@ -25,6 +25,7 @@ const NextList = () => {
     setQueue(queue.slice(0, idx).concat(queue.slice(idx + 1)));
   };
 
+  // out of scope for NextList. i should use Query
   const updateVideoList = useCallback(async () => {
     const allowed_filetypes = ['.webm', '.mkv'];
     // subbed in shenanigans in place of Node function
@@ -38,46 +39,36 @@ const NextList = () => {
     return files;
   }, []);
 
-  const changeMedia = useCallback(async () => {
-    if (!inputName) {
-      return;
-    }
-
+  const nextVideo = useCallback(async () => {
     const files = await updateVideoList();
+
+    if (!inputName) {
+      return '';
+    }
 
     // shenanigans in place of Node function
     const randomInt = (max: number) => Math.floor(max * Math.random());
 
     if (queue.length === 0) {
-      settings.local_file = (await GetBasePath()) + files[randomInt(files.length)];
+      return files[randomInt(files.length)];
     } else {
-      // also replacing Node function
-      settings.local_file = (await GetBasePath()) + queue[0];
+      const out = queue[0];
       setQueue(queue.slice(1));
+      return out;
     }
-
-    // observation: if the same video that just finished is picked again, this does nothing
-    try {
-      await call(connection, 'SetInputSettings', {
-        inputName: inputName,
-        inputSettings: settings,
-      });
-    } catch {
-      console.log('Failed to change media.');
-
-      // future media change attempts short-circuit on empty input name
-      // so this assign means we only fail once
-      setData({ connection, settings, inputName: '' });
-    }
-
-    setData({ connection, inputName, settings });
-    return;
-  }, [connection, inputName, settings, setData, queue, updateVideoList]);
+  }, [updateVideoList, queue, inputName]);
 
   const skip = () => {
     stopMedia(connection, inputName)
-      .then(() => {
-        changeMedia().catch(console.error);
+      .then(nextVideo)
+      .then(next => {
+        changeMedia(connection, inputName, settings, next)
+          .then(result => {
+            if (result) {
+              setData(result);
+            }
+          })
+          .catch(console.error);
       })
       .catch(console.error);
     removeOne(0);
@@ -87,12 +78,19 @@ const NextList = () => {
     isMediaStopped(connection, inputName)
       .then((mediaStopped: boolean) => {
         if (connection.identified && mediaStopped) {
-          changeMedia().catch(console.error);
+          nextVideo()
+            .then(next => changeMedia(connection, inputName, settings, next))
+            .then(result => {
+              if (result) {
+                setData(result);
+              }
+            })
+            .catch(console.error);
         }
         return;
       })
       .catch(err => console.error('Media change interval failure', err));
-  }, [connection, inputName, changeMedia]);
+  }, [connection, inputName, nextVideo, setData, settings]);
 
   useEffect(() => {
     updateVideoList().catch(console.error); // so we update our video options immediately
