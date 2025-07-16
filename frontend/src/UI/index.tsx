@@ -5,7 +5,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import HelpModal from './HelpModal';
 import NextList from './NextList';
 import SelectForm from './SelectForm';
-import { getInputList } from '../Obs';
+import { getInputList } from '../HelperFunctions/Obs';
 
 const UI = () => {
   const [{ connection, inputName, settings }] = useContext(SocketContext);

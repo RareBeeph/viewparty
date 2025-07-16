@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
-import { connect } from './Obs';
+import { connect } from './HelperFunctions/Obs';
 
 interface Props {
   children: ReactNode;

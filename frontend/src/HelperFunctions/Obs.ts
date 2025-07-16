@@ -1,6 +1,6 @@
 import { OBSRequestTypes, OBSWebSocket } from 'obs-websocket-js';
-import { SocketData } from './SocketProvider';
-import { GetBasePath } from '../wailsjs/go/main/App';
+import { SocketData } from '../SocketProvider';
+import { GetBasePath } from '../../wailsjs/go/main/App';
 
 const getStatus = async (conn: OBSWebSocket, inputName: string) =>
   call(conn, 'GetMediaInputStatus', { inputName });
@@ -110,6 +110,6 @@ export const changeMedia = async (
     return { connection, settings, inputName: '' };
   }
 
-  // undefined return here meaning no changes to the inputs
-  return;
+  // settings have been changed, so we return the updated values
+  return { connection, inputName, settings };
 };

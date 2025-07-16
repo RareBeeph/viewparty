@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { SocketContext } from '../SocketProvider';
 import { Button, Form } from 'react-bootstrap';
-import { changeInput } from '../Obs';
+import { changeInput } from '../HelperFunctions/Obs';
 
 const SelectForm = ({ action, options }: { action: string; options: string[] }) => {
   const [selected, setSelected] = useState('');
