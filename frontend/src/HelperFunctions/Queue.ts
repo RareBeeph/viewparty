@@ -16,9 +16,7 @@ export const removeOne = (queue: string[], idx: number) => {
 export const filteredVideoList = async () => {
   const allowed_filetypes = ['.webm', '.mkv'];
   const files = (await GetVideos()).filter(file =>
-    allowed_filetypes
-      .map(filetype => file.endsWith(filetype))
-      .reduce((acc, curr) => acc || curr, false),
+    allowed_filetypes.map(filetype => file.endsWith(filetype)).some(Boolean),
   );
 
   return files;

@@ -11,24 +11,26 @@ import {
   filteredVideoList,
 } from '../HelperFunctions/Queue';
 
-const defaultQueue: string[] = [];
-
 const NextList = () => {
   const [{ connection, inputName, settings }, setData] = useContext(SocketContext);
-  const defaultVideos: string[] = [];
-  const [videos, setVideos] = useState(defaultVideos); // TODO: useQuery
-  const [queue, setQueue] = useState(defaultQueue);
+  const [videos, setVideos] = useState([] as string[]); // TODO: useQuery
+  const [queue, setQueue] = useState([] as string[]);
 
+  // Whenever you start a new block like this it's helpful to describe
+  // what you're going to be doing and why. Much of this is going to change
+  // with a reducer, but I'll write some examples:
+  // --
+  // Handler to change media and retrieve new video list
   const changeMediaAndSetState = useCallback(async () => {
     const newVideos = await filteredVideoList();
     setVideos(newVideos);
 
-    const { next, newQueue } = inputName
-      ? pickNextVideo(queue, newVideos)
-      : { next: '', newQueue: undefined };
-    if (newQueue) {
-      setQueue(newQueue);
+    if (!inputName) {
+      return;
     }
+
+    const { next, newQueue } = pickNextVideo(queue, newVideos);
+    newQueue && setQueue(newQueue);
 
     const newData = await changeMedia(connection, inputName, settings, next);
     if (newData) {
@@ -36,30 +38,25 @@ const NextList = () => {
     }
   }, [setVideos, setQueue, setData, queue, connection, inputName, settings]);
 
-  const mediaChangeCallback = useCallback(() => {
-    (async () => {
+  // Listener to regularly check if the video stopped playing
+  useEffect(() => {
+    filteredVideoList().then(setVideos).catch(console.error); // so we update our video options immediately
+    const mediaChangeInterval = setInterval(async () => {
       const mediaStopped = await isMediaStopped(connection, inputName);
       if (connection.identified && mediaStopped) {
         await changeMediaAndSetState();
       }
-    })().catch(console.error);
-  }, [connection, inputName, changeMediaAndSetState]);
-
-  useEffect(() => {
-    filteredVideoList().then(setVideos).catch(console.error); // so we update our video options immediately
-    const mediaChangeInterval = setInterval(mediaChangeCallback, 5000);
+    }, 5000);
     return () => {
       clearInterval(mediaChangeInterval);
     };
-  }, [mediaChangeCallback]);
+  }, [connection, inputName, changeMediaAndSetState]);
 
   const defaultName = videos?.[0] || '';
 
-  const skip = () => {
-    (async () => {
-      await stopMedia(connection, inputName);
-      await changeMediaAndSetState();
-    })().catch(console.error);
+  const skip = async () => {
+    await stopMedia(connection, inputName);
+    await changeMediaAndSetState();
   };
 
   return (
