@@ -4,12 +4,12 @@ import { Button, Form } from 'react-bootstrap';
 
 const SelectForm = ({ action, options }: { action: string; options: string[] }) => {
   const [selected, setSelected] = useState('');
-  const [_, dispatch] = useContext(SocketContext);
+  const dispatch = useContext(SocketContext)[1];
 
   const submit = () => {
     switch (action) {
       case 'input':
-        dispatch({type:'input', data:{newInputName: selected}});
+        dispatch({ type: 'input', data: { newInputName: selected } });
         break;
       default:
     }

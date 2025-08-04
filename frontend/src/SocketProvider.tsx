@@ -13,10 +13,7 @@ export interface SocketData {
   settings: Record<'local_file', string>;
 }
 const data: SocketData = { connection: socket, inputName: '', settings: { local_file: '' } };
-const defaultContext: [SocketData, React.Dispatch<SocketAction>] = [
-  data,
-  console.error,
-];
+const defaultContext: [SocketData, React.Dispatch<SocketAction>] = [data, console.error];
 export const SocketContext = createContext(defaultContext);
 
 interface Props {
@@ -24,6 +21,6 @@ interface Props {
 }
 
 export default function SocketProvider({ children }: Props) {
-  const state = useImmerReducer(socketreducer, data)
+  const state = useImmerReducer(socketreducer, data);
   return <SocketContext.Provider value={state}>{children}</SocketContext.Provider>;
 }
