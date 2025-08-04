@@ -2,21 +2,21 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import VideoEntry from './VideoEntry';
 import { Button, Row, Col } from 'react-bootstrap';
 import { SocketContext } from '../SocketProvider';
-import { changeMedia, isMediaStopped, stopMedia } from '../HelperFunctions/Obs';
+import { isMediaStopped, stopMedia } from '../utils/obs';
 import {
   addBelow,
   pickNextVideo,
   removeOne,
   updateOne,
   filteredVideoList,
-} from '../HelperFunctions/Queue';
+} from '../utils/queue';
 
 const justThrow = (e: unknown) => {
   throw e;
 };
 
 const NextList = () => {
-  const [{ connection, inputName, settings }, setData] = useContext(SocketContext);
+  const [{ connection, inputName, settings }, dispatch] = useContext(SocketContext);
   const [videos, setVideos] = useState([] as string[]); // TODO: useQuery
   const [queue, setQueue] = useState([] as string[]);
 
@@ -30,11 +30,8 @@ const NextList = () => {
     const { next, newQueue } = pickNextVideo(queue, newVideos);
     if (newQueue) setQueue(newQueue);
 
-    const newData = await changeMedia(connection, inputName, settings, next);
-    if (newData) {
-      setData(newData);
-    }
-  }, [setVideos, setQueue, setData, queue, connection, inputName, settings]);
+    dispatch({type: 'media', data:{nextVideo: next}});
+  }, [setVideos, setQueue, dispatch, queue, connection, inputName, settings]);
 
   // Listener to regularly check if the video stopped playing
   useEffect(() => {

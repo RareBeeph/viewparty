@@ -1,18 +1,15 @@
 import { useContext, useEffect, useState } from 'react';
 import { SocketContext } from '../SocketProvider';
 import { Button, Form } from 'react-bootstrap';
-import { changeInput } from '../HelperFunctions/Obs';
 
 const SelectForm = ({ action, options }: { action: string; options: string[] }) => {
   const [selected, setSelected] = useState('');
-  const [{ connection, settings, inputName }, setData] = useContext(SocketContext);
+  const [_, dispatch] = useContext(SocketContext);
 
   const submit = () => {
     switch (action) {
       case 'input':
-        changeInput(connection, settings, inputName, selected).then(setData).catch(console.error);
-        break;
-      case 'next':
+        dispatch({type:'input', data:{newInputName: selected}});
         break;
       default:
     }

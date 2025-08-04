@@ -22,7 +22,7 @@ export const isMediaStopped = async (conn: OBSWebSocket, inputName: string) => {
   return !currentStatus.mediaDuration;
 };
 
-const call = async <Type extends keyof OBSRequestTypes>(
+export const call = async <Type extends keyof OBSRequestTypes>(
   conn: OBSWebSocket,
   requestType: Type,
   requestData?: OBSRequestTypes[Type],
