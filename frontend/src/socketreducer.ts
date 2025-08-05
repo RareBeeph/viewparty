@@ -1,74 +1,41 @@
-import { GetBasePath } from '../wailsjs/go/main/App';
 import { SocketData } from './SocketProvider';
 import type { WritableDraft } from 'immer';
-import { call, stopMedia } from './utils/obs';
-import OBSWebSocket from 'obs-websocket-js';
 
-interface InputAction {
-  type: 'input';
-  data: { newInputName: string };
+export enum Action {
+  SetInput,
+  MergeSettings,
 }
 
-interface MediaAction {
-  type: 'media';
-  data: { nextVideo: string };
+interface SetInputAction {
+  type: Action.SetInput;
+  data: string;
 }
 
-export type SocketAction = InputAction | MediaAction;
+interface MergeSettingsAction {
+  type: Action.MergeSettings;
+  data: object;
+}
 
-const changeInput = async (draft: WritableDraft<SocketData>, action: InputAction) => {
-  const oldInputName = draft.inputName;
-  const newInputName = action.data.newInputName;
-  const conn = draft.connection as OBSWebSocket;
+export type SocketAction = SetInputAction | MergeSettingsAction;
 
-  if (oldInputName) {
-    await stopMedia(conn, oldInputName);
-  }
-
-  const input = await call(conn, 'GetInputSettings', { inputName: newInputName });
-
-  const settingsResp = await call(conn, 'GetInputDefaultSettings', {
-    inputKind: input.inputKind,
-  });
-
-  draft.inputName = newInputName;
-  draft.settings = Object.assign(draft.settings, {
-    ...settingsResp.defaultInputSettings,
-    ...input.inputSettings,
-  });
+const setInput = (draft: WritableDraft<SocketData>, action: SetInputAction) => {
+  draft.inputName = action.data;
 };
 
-const changeMedia = async (draft: WritableDraft<SocketData>, action: MediaAction) => {
-  const nextVideo = action.data.nextVideo;
-
-  if (!draft.inputName || !nextVideo) {
-    return;
-  }
-
-  draft.settings.local_file = (await GetBasePath()) + nextVideo;
-
-  // observation: if the same video that just finished is picked again, this does nothing
-  try {
-    await call(draft.connection as OBSWebSocket, 'SetInputSettings', {
-      inputName: draft.inputName,
-      inputSettings: draft.settings,
-    });
-  } catch {
-    console.log('Failed to change media.');
-    // future media change attempts short-circuit on empty input name
-    // so this assign means we only fail once
-    draft.inputName = '';
-  }
+const mergeSettings = (draft: WritableDraft<SocketData>, action: MergeSettingsAction) => {
+  draft.settings = { ...draft.settings, ...action.data };
 };
 
 export const socketreducer = (draft: WritableDraft<SocketData>, action: SocketAction) => {
-  switch (action.type) {
-    case 'input':
-      changeInput(draft, action).catch(console.error);
-      break;
-    case 'media':
-      changeMedia(draft, action).catch(console.error);
-      break;
-    default:
+  try {
+    switch (action.type) {
+      case Action.SetInput:
+        return void setInput(draft, action);
+      case Action.MergeSettings:
+        return void mergeSettings(draft, action);
+      default:
+    }
+  } catch (e) {
+    console.error(e);
   }
 };

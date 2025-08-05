@@ -2,8 +2,9 @@ import { createContext } from 'react';
 import { useImmerReducer } from 'use-immer';
 import type { ReactNode } from 'react';
 import OBSWebSocket from 'obs-websocket-js';
-import { SocketAction, socketreducer } from './socketreducer';
+import { SocketAction, socketreducer, Action } from './socketreducer';
 
+export { Action };
 const socket = new OBSWebSocket();
 socket.connect().catch(console.error);
 

@@ -4,7 +4,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 
 import HelpModal from './HelpModal';
 import NextList from './NextList';
-import SelectForm from './SelectForm';
+import InputSelect from './InputSelect';
 import { getInputList } from '../utils/obs';
 
 const UI = () => {
@@ -31,7 +31,7 @@ const UI = () => {
         <Row>
           <Col className="border p-3 mx-3">
             <p>Current Input: {inputName || 'n/a'}</p>
-            <SelectForm action="input" options={options.map(e => e.inputName)} />
+            <InputSelect options={options.map(e => e.inputName)} />
           </Col>
         </Row>
         <Row className="border p-3 mx-3">
