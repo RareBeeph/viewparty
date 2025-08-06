@@ -20,10 +20,10 @@ const InputSelect = ({ options }: { options: string[] }) => {
       inputKind: input.inputKind,
     });
 
-    const settings = Object.assign(store.settings, {
+    const settings = {
       ...settingsResp.defaultInputSettings,
       ...input.inputSettings,
-    });
+    };
 
     dispatch({ type: Action.SetInput, data: selected });
     dispatch({ type: Action.MergeSettings, data: settings });
@@ -50,7 +50,7 @@ const InputSelect = ({ options }: { options: string[] }) => {
           );
         })}
       </Form.Select>
-      <Button variant="primary" onClick={() => void submit}>
+      <Button variant="primary" onClick={() => void submit()}>
         Submit
       </Button>
     </>

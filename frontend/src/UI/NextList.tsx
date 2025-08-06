@@ -1,16 +1,17 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import VideoEntry from './VideoEntry';
 import { Button, Row, Col } from 'react-bootstrap';
-import { SocketContext } from '../SocketProvider';
-import { isMediaStopped, stopMedia } from '../utils/obs';
+import { Action, SocketContext } from '../SocketProvider';
+import { call, isMediaStopped, stopMedia } from '../utils/obs';
 import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from '../utils/queue';
+import { GetBasePath } from '../../wailsjs/go/main/App';
 
 const justThrow = (e: unknown) => {
   throw e;
 };
 
 const NextList = () => {
-  const [{ connection, inputName }, dispatch] = useContext(SocketContext);
+  const [{ connection, inputName, settings }, dispatch] = useContext(SocketContext);
   const [videos, setVideos] = useState([] as string[]); // TODO: useQuery
   const [queue, setQueue] = useState([] as string[]);
 
@@ -24,8 +25,25 @@ const NextList = () => {
     const { next, newQueue } = pickNextVideo(queue, newVideos);
     if (newQueue) setQueue(newQueue);
 
-    dispatch({ type: 'media', data: { nextVideo: next } });
-  }, [setVideos, setQueue, dispatch, queue, inputName]);
+    if (!next) return;
+
+    const nextPath = (await GetBasePath()) + next;
+
+    // observation: if the same video that just finished is picked again, this does nothing
+    try {
+      await call(connection, 'SetInputSettings', {
+        inputName: inputName,
+        inputSettings: { ...settings, local_file: nextPath },
+      });
+    } catch {
+      console.log('Failed to change media.');
+      // future media change attempts short-circuit on empty input name
+      // so this assign means we only fail once
+      dispatch({ type: Action.SetInput, data: '' });
+    }
+
+    dispatch({ type: Action.MergeSettings, data: { nextVideo: next, local_file: nextPath } });
+  }, [setVideos, setQueue, dispatch, queue, inputName, settings, connection]);
 
   // Listener to regularly check if the video stopped playing
   useEffect(() => {
