@@ -47,8 +47,8 @@ const NextList = () => {
         inputName: inputName,
         inputSettings: { ...settings, local_file: nextPath },
       });
-    } catch {
-      console.log('Failed to change media.');
+    } catch (e) {
+      console.error('Failed to change media', e);
       // future media change attempts short-circuit on empty input name
       // so this assign means we only fail once
       dispatch({ type: Action.SetInput, data: '' });
