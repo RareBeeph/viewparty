@@ -34,14 +34,22 @@ export const call = async <Type extends keyof OBSRequestTypes>(
   return conn.call(requestType, requestData);
 };
 
-export const connect = async (conn: OBSWebSocket) => {
+export const connect = async (
+  conn: OBSWebSocket,
+  host?: string,
+  port?: number,
+  password?: string,
+) => {
   if (!conn) {
     console.log('Attempted to connect while OBS websocket object is null.');
     return;
   }
 
+  host ??= '127.0.0.1';
+  port ??= 4455;
+
   try {
-    await conn.connect('ws://127.0.0.1:4455');
+    await conn.connect(`ws://${host}:${port}`, password);
     console.log('Connected successfully.');
   } catch (err) {
     console.error('Failed to connect to OBS. Retrying in 5 seconds.', err);

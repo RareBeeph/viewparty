@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
-import { connect } from './utils/obs';
+import AuthUI from './AuthUI';
 
 interface Props {
   children: ReactNode;
@@ -38,24 +38,9 @@ export default function AuthWrapper({ children }: Props) {
     connection.on('ConnectionClosed', onClose);
   }, [connection]); // run once, unless the reference to obs.connection changes (i.e. from null to not null)
 
-  useEffect(() => {
-    const reconnectCallback = () => {
-      if (!connection.identified) {
-        connect(connection).catch(err => console.error('Obs.retryConnect() failure', err));
-      }
-      return;
-    };
-
-    const reconnectInterval = setInterval(reconnectCallback, 5000);
-
-    return () => {
-      clearInterval(reconnectInterval);
-    };
-  }, [connection]);
-
   if (!connected) {
     console.log('not connected yet');
-    return;
+    return <AuthUI />;
   }
 
   return children;
