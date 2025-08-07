@@ -31,6 +31,9 @@ const NextList = () => {
     );
     if (newQueue) setQueue(newQueue);
 
+    // Idea: we should maybe define shared behavior for when we can't pick a
+    // new video or change media - I like clearing out the input name, can we
+    // wrap that up in a `const fail = () => ...`?
     if (!next) return;
 
     if (lockout.length < lockoutThreshold(videos.data.length)) {
@@ -40,8 +43,6 @@ const NextList = () => {
     }
 
     const nextPath = (await GetBasePath()) + next;
-
-    // observation: if the same video that just finished is picked again, this does nothing
     try {
       await call(connection, 'SetInputSettings', {
         inputName: inputName,
@@ -77,6 +78,8 @@ const NextList = () => {
         }
       })().catch(console.error);
     }, 5000);
+
+    // (I need this vertical whitespace here for my sanity)
     return () => {
       clearInterval(mediaChangeInterval);
     };
