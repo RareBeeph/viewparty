@@ -18,8 +18,8 @@ const lockoutThreshold = (numOptions: number) => {
 const NextList = () => {
   const [{ connection, inputName, settings }, dispatch] = useContext(SocketContext);
   const videos = useQuery({ queryKey: ['videoOptions'], queryFn: filteredVideoList });
-  const [queue, setQueue] = useState([] as string[]);
-  const [lockout, setLockout] = useState([] as string[]);
+  const [queue, setQueue] = useState<string[]>([]);
+  const [lockout, setLockout] = useState<string[]>([]);
 
   // Handler to change media and update queue
   const changeMedia = useCallback(async () => {
