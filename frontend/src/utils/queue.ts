@@ -25,7 +25,7 @@ export const filteredVideoList = async () => {
 const randomInt = (max: number) => Math.floor(max * Math.random());
 
 export const pickNextVideo = (queue: string[], files: string[]) => {
-  const out: { next: string; newQueue: string[] | undefined } = { next: '', newQueue: undefined };
+  const out: { next: string; newQueue?: string[] } = { next: '', newQueue: undefined };
 
   if (queue.length === 0) {
     out.next = files[randomInt(files.length)];

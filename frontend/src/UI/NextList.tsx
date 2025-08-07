@@ -5,6 +5,7 @@ import { Action, SocketContext } from '../SocketProvider';
 import { call, isMediaStopped, stopMedia } from '../utils/obs';
 import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from '../utils/queue';
 import { GetBasePath } from '../../wailsjs/go/main/App';
+import { useQuery } from '@tanstack/react-query';
 
 const justThrow = (e: unknown) => {
   throw e;
@@ -12,17 +13,14 @@ const justThrow = (e: unknown) => {
 
 const NextList = () => {
   const [{ connection, inputName, settings }, dispatch] = useContext(SocketContext);
-  const [videos, setVideos] = useState([] as string[]); // TODO: useQuery
+  const videos = useQuery({ queryKey: ['videoOptions'], queryFn: filteredVideoList });
   const [queue, setQueue] = useState([] as string[]);
 
-  // Handler to change media and retrieve new video list
-  const changeMediaAndSetState = useCallback(async () => {
-    const newVideos = await filteredVideoList();
-    setVideos(newVideos);
+  // Handler to change media and update queue
+  const changeMedia = useCallback(async () => {
+    if (!inputName || !videos.isSuccess) return;
 
-    if (!inputName) return;
-
-    const { next, newQueue } = pickNextVideo(queue, newVideos);
+    const { next, newQueue } = pickNextVideo(queue, videos.data);
     if (newQueue) setQueue(newQueue);
 
     if (!next) return;
@@ -43,29 +41,28 @@ const NextList = () => {
     }
 
     dispatch({ type: Action.MergeSettings, data: { nextVideo: next, local_file: nextPath } });
-  }, [setVideos, setQueue, dispatch, queue, inputName, settings, connection]);
+  }, [setQueue, dispatch, queue, inputName, settings, connection, videos.isSuccess, videos.data]);
 
   // Listener to regularly check if the video stopped playing
   useEffect(() => {
-    filteredVideoList().then(setVideos).catch(console.error); // so we update our video options immediately
     const mediaChangeInterval = setInterval(() => {
       (async () => {
         const mediaStopped = await isMediaStopped(connection, inputName);
         if (connection.identified && mediaStopped) {
-          await changeMediaAndSetState();
+          await changeMedia();
         }
       })().catch(console.error);
     }, 5000);
     return () => {
       clearInterval(mediaChangeInterval);
     };
-  }, [connection, inputName, changeMediaAndSetState]);
+  }, [connection, inputName, changeMedia]);
 
-  const defaultName = videos?.[0] || '';
+  const defaultName = videos.data?.[0] ?? '';
 
   const skip = async () => {
     await stopMedia(connection, inputName);
-    await changeMediaAndSetState();
+    await changeMedia();
   };
 
   return (
@@ -91,7 +88,7 @@ const NextList = () => {
             <Col>
               <VideoEntry
                 name={name}
-                videos={videos}
+                videos={videos.isSuccess ? videos.data : []}
                 updateSelf={(name: string) => {
                   setQueue(updateOne(queue, idx, name));
                 }}
