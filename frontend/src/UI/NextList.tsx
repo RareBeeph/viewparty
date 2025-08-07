@@ -11,19 +11,33 @@ const justThrow = (e: unknown) => {
   throw e;
 };
 
+const lockoutThreshold = (numOptions: number) => {
+  return Math.min(Math.floor(numOptions * 0.5), 10);
+};
+
 const NextList = () => {
   const [{ connection, inputName, settings }, dispatch] = useContext(SocketContext);
   const videos = useQuery({ queryKey: ['videoOptions'], queryFn: filteredVideoList });
   const [queue, setQueue] = useState([] as string[]);
+  const [lockout, setLockout] = useState([] as string[]);
 
   // Handler to change media and update queue
   const changeMedia = useCallback(async () => {
     if (!inputName || !videos.isSuccess) return;
 
-    const { next, newQueue } = pickNextVideo(queue, videos.data);
+    const { next, newQueue } = pickNextVideo(
+      queue,
+      videos.data.filter(v => !lockout.includes(v)),
+    );
     if (newQueue) setQueue(newQueue);
 
     if (!next) return;
+
+    if (lockout.length < lockoutThreshold(videos.data.length)) {
+      setLockout([...lockout, next]);
+    } else {
+      setLockout([...lockout.slice(1), next]);
+    }
 
     const nextPath = (await GetBasePath()) + next;
 
@@ -41,7 +55,17 @@ const NextList = () => {
     }
 
     dispatch({ type: Action.MergeSettings, data: { nextVideo: next, local_file: nextPath } });
-  }, [setQueue, dispatch, queue, inputName, settings, connection, videos.isSuccess, videos.data]);
+  }, [
+    setQueue,
+    dispatch,
+    queue,
+    inputName,
+    settings,
+    connection,
+    videos.isSuccess,
+    videos.data,
+    lockout,
+  ]);
 
   // Listener to regularly check if the video stopped playing
   useEffect(() => {
