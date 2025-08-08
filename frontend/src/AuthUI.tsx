@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { SocketContext } from '../SocketProvider';
+import { SocketContext } from './SocketProvider';
 import { Button, Container, Form, Row } from 'react-bootstrap';
-import { connect } from '../utils/obs';
 
 const AuthUI = () => {
   const [{ connection }] = useContext(SocketContext);
@@ -11,7 +10,14 @@ const AuthUI = () => {
   const [retry, setRetry] = useState(false);
 
   const tryConnect = useCallback(
-    () => void connect(connection, host, port, password).catch(console.error),
+    () =>
+      void (async () => {
+        try {
+          await connection.connect(`ws://${host}:${port}`, password);
+        } catch (err) {
+          console.error('OBS Connection error', err);
+        }
+      })(),
     [connection, host, port, password],
   );
 
