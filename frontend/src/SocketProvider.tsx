@@ -6,7 +6,7 @@ import { SocketAction, socketreducer, Action } from './socketreducer';
 
 export { Action };
 const socket = new OBSWebSocket();
-socket.connect().catch(console.error);
+// socket.connect().catch(console.error);
 
 export interface SocketData {
   connection: OBSWebSocket;

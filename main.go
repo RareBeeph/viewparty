@@ -2,7 +2,9 @@ package main
 
 import (
 	"embed"
+	"fmt"
 
+	wailsconfigstore "github.com/AndreiTelteu/wails-configstore"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -15,8 +17,14 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
+	configStore, err := wailsconfigstore.NewConfigStore("My Application Name")
+	if err != nil {
+		fmt.Printf("could not initialize the config store: %v\n", err)
+		return
+	}
+
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:  "myproject",
 		Width:  1024,
 		Height: 768,
@@ -27,6 +35,7 @@ func main() {
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
+			configStore,
 		},
 	})
 
