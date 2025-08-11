@@ -22,22 +22,25 @@ const AuthUI = () => {
     [connection, host, port, password],
   );
 
+  // This Effect is intended to autofill the forms on startup and attempt to auto-connect.
   useEffect(() => {
     ConfigStore.Get('auth.json', 'null')
-      .then( response => {
+      .then(response => {
         const data = JSON.parse(response as string) as {
           host?: string;
           port?: number;
           password?: string;
         };
-        if (!data) return
+        if (!data) return;
         if (data.host) setHost(data.host);
         if (data.port) setPort(data.port);
         if (data.password) setPassword(data.password);
-        connection.connect(`ws://${data.host ?? host}:${data.port ?? port}`, data.password ?? password).catch(console.error)
+        connection
+          .connect(`ws://${data.host ?? 'localhost'}:${data.port ?? 4455}`, data.password)
+          .catch(console.error);
       })
       .catch(console.error);
-  });
+  }, [connection]);
 
   useEffect(() => {
     const reconnectCallback = () => {

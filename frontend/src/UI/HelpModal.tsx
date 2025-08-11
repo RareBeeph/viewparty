@@ -1,7 +1,9 @@
 import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { SocketContext } from '../SocketProvider';
 
 const HelpModal = () => {
+  const [{ connection }] = useContext(SocketContext);
   const [show, setShow] = useState(false);
 
   return (
@@ -12,8 +14,11 @@ const HelpModal = () => {
             <h1>Viewparty</h1>
           </Col>
 
-          <Col className="px-4 align-content-center">
-            <Button variant="light" className="float-end" onClick={() => setShow(true)}>
+          <Col className="px-4 d-flex align-content-center justify-content-end">
+            <Button variant="light" className="m-2" onClick={() => void connection.disconnect()}>
+              Disconnect
+            </Button>
+            <Button variant="light" className="my-2" onClick={() => setShow(true)}>
               Help
             </Button>
           </Col>

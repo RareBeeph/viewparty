@@ -31,11 +31,13 @@ export default function AuthWrapper({ children }: Props) {
       setConnected(false);
     };
 
-    connection.off('Identified'); // remove any residual listeners (not sure if this is necessary)
     connection.on('Identified', onIdentify);
-
-    connection.off('ConnectionClosed');
     connection.on('ConnectionClosed', onClose);
+
+    return () => {
+      connection.off('Identified'); // remove any residual listeners (not sure if this is necessary)
+      connection.off('ConnectionClosed');
+    };
   }, [connection]); // run once, unless the reference to obs.connection changes (i.e. from null to not null)
 
   if (!connected) {
