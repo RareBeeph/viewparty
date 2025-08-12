@@ -22,8 +22,8 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-func (a *App) GetVideos() []string {
-	dir, err := os.ReadDir("./videos")
+func (a *App) GetVideos(srcDir string) []string {
+	dir, err := os.ReadDir(srcDir)
 
 	if err != nil {
 		println(err.Error())
@@ -42,13 +42,13 @@ func (a *App) GetVideos() []string {
 	return videos
 }
 
-func (a *App) GetBasePath() string {
-	abs, err := filepath.Abs(".")
+func (a *App) GetBasePath(srcDir string) string {
+	abs, err := filepath.Abs(srcDir)
 
 	if err != nil {
 		println(err.Error())
 		return ""
 	}
 
-	return abs + "/videos/"
+	return abs + "/"
 }

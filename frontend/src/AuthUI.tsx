@@ -22,7 +22,6 @@ const AuthUI = () => {
     [connection, host, port, password],
   );
 
-  // This Effect is intended to autofill the forms on startup and attempt to auto-connect.
   useEffect(() => {
     ConfigStore.Get('auth.json', 'null')
       .then(response => {
@@ -32,12 +31,10 @@ const AuthUI = () => {
           password?: string;
         };
         if (!data) return;
+
         if (data.host) setHost(data.host);
         if (data.port) setPort(data.port);
         if (data.password) setPassword(data.password);
-        connection
-          .connect(`ws://${data.host ?? 'localhost'}:${data.port ?? 4455}`, data.password)
-          .catch(console.error);
       })
       .catch(console.error);
   }, [connection]);
@@ -59,6 +56,9 @@ const AuthUI = () => {
     ConfigStore.Set(
       'auth.json',
       JSON.stringify({
+        host: host,
+        port: port,
+        password: password,
         [key]: value,
       }),
     ).catch(console.error);
@@ -69,23 +69,25 @@ const AuthUI = () => {
     <Container className="mt-5">
       <Row className="border p-3 mx-3">
         <p>Host:</p>
-        <input
+        <Form.Control
           type="text"
+          placeholder="localhost"
           value={host}
           onChange={e => setHost(setConfig('host', e.target.value) as string)}
         />
       </Row>
       <Row className="border p-3 mx-3">
         <p>Port:</p>
-        <input
+        <Form.Control
           type="number"
+          placeholder="4455"
           value={port}
-          onChange={e => setPort(setConfig('port', e.target.valueAsNumber) as number)}
+          onChange={e => setPort(setConfig('port', e.target.value) as number)}
         />
       </Row>
       <Row className="border p-3 mx-3">
         <p>Password (leave empty if not applicable):</p>
-        <input
+        <Form.Control
           type="string"
           value={password}
           onChange={e => setPassword(setConfig('password', e.target.value) as string)}

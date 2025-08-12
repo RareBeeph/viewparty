@@ -13,9 +13,9 @@ export const removeOne = (queue: string[], idx: number) => {
 };
 
 // Probably replace this with useQuery later
-export const filteredVideoList = async () => {
+export const filteredVideoList = async (srcDir: string) => {
   const allowed_filetypes = ['.webm', '.mkv'];
-  const files = (await GetVideos()).filter(file =>
+  const files = (await GetVideos(srcDir)).filter(file =>
     allowed_filetypes.map(filetype => file.endsWith(filetype)).some(Boolean),
   );
 

@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import VideoEntry from './VideoEntry';
-import { Button, Row, Col } from 'react-bootstrap';
+import { Button, Row, Col, Form } from 'react-bootstrap';
 import { Action, SocketContext } from '../SocketProvider';
 import { call, isMediaStopped, stopMedia } from '../utils/obs';
 import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from '../utils/queue';
@@ -17,7 +17,11 @@ const lockoutThreshold = (numOptions: number) => {
 
 const NextList = () => {
   const [{ connection, inputName, settings }, dispatch] = useContext(SocketContext);
-  const videos = useQuery({ queryKey: ['videoOptions'], queryFn: filteredVideoList });
+  const [sourceDir, setSourceDir] = useState('./videos');
+  const videos = useQuery({
+    queryKey: ['videoOptions', sourceDir],
+    queryFn: async () => filteredVideoList(sourceDir),
+  });
   const [queue, setQueue] = useState<string[]>([]);
   const [lockout, setLockout] = useState<string[]>([]);
 
@@ -42,7 +46,7 @@ const NextList = () => {
       setLockout([...lockout.slice(1), next]);
     }
 
-    const nextPath = (await GetBasePath()) + next;
+    const nextPath = (await GetBasePath(sourceDir)) + next;
     try {
       await call(connection, 'SetInputSettings', {
         inputName: inputName,
@@ -66,6 +70,7 @@ const NextList = () => {
     videos.isSuccess,
     videos.data,
     lockout,
+    sourceDir,
   ]);
 
   // Listener to regularly check if the video stopped playing
@@ -127,6 +132,10 @@ const NextList = () => {
           </Row>
         );
       })}
+      <Row>
+        Source directory:
+        <Form.Control type="text" value={sourceDir} onChange={e => setSourceDir(e.target.value)} />
+      </Row>
     </>
   );
 };

@@ -1,6 +1,5 @@
 import { OBSRequestTypes, OBSWebSocket } from 'obs-websocket-js';
 import { SocketData } from '../SocketProvider';
-import { GetBasePath } from '../../wailsjs/go/main/App';
 
 const getStatus = async (conn: OBSWebSocket, inputName: string) =>
   call(conn, 'GetMediaInputStatus', { inputName });
@@ -69,33 +68,4 @@ export const stopMedia = async (conn: OBSWebSocket, inputName: string) => {
     inputName,
     mediaAction: 'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
   });
-};
-
-export const changeMedia = async (
-  connection: OBSWebSocket,
-  inputName: string,
-  settings: Record<'local_file', string>,
-  nextVideo: string,
-) => {
-  if (!inputName || !nextVideo) {
-    return;
-  }
-
-  settings.local_file = (await GetBasePath()) + nextVideo;
-
-  // observation: if the same video that just finished is picked again, this does nothing
-  try {
-    await call(connection, 'SetInputSettings', {
-      inputName: inputName,
-      inputSettings: settings,
-    });
-  } catch {
-    console.log('Failed to change media.');
-    // future media change attempts short-circuit on empty input name
-    // so this assign means we only fail once
-    return { connection, settings, inputName: '' };
-  }
-
-  // settings have been changed, so we return the updated values
-  return { connection, inputName, settings };
 };

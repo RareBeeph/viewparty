@@ -3,9 +3,23 @@ import { useImmerReducer } from 'use-immer';
 import type { ReactNode } from 'react';
 import OBSWebSocket from 'obs-websocket-js';
 import { SocketAction, socketreducer, Action } from './socketreducer';
+import * as ConfigStore from '../wailsjs/go/wailsconfigstore/ConfigStore';
 
 export { Action };
 const socket = new OBSWebSocket();
+
+ConfigStore.Get('auth.json', 'null')
+  .then(async response => {
+    const data = JSON.parse(response as string) as {
+      host?: string;
+      port?: number;
+      password?: string;
+    };
+    if (!data) return;
+
+    await socket.connect(`ws://${data.host ?? 'localhost'}:${data.port ?? 4455}`, data.password);
+  })
+  .catch(console.error);
 
 export interface SocketData {
   connection: OBSWebSocket;
