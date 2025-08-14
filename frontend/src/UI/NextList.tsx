@@ -6,6 +6,7 @@ import { call, isMediaStopped, stopMedia } from '../utils/obs';
 import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from '../utils/queue';
 import { GetBasePath } from '../../wailsjs/go/main/App';
 import { useQuery } from '@tanstack/react-query';
+import * as ConfigStore from '../../wailsjs/go/wailsconfigstore/ConfigStore';
 
 const justThrow = (e: unknown) => {
   throw e;
@@ -24,6 +25,16 @@ const NextList = () => {
   });
   const [queue, setQueue] = useState<string[]>([]);
   const [lockout, setLockout] = useState<string[]>([]);
+
+  useEffect(() => {
+    ConfigStore.Get('sourcedir.json', 'null')
+      .then(response => {
+        const data = JSON.parse(response as string) as { sourceDir?: string };
+
+        if (data.sourceDir) setSourceDir(data.sourceDir);
+      })
+      .catch(console.error);
+  }, []);
 
   // Handler to change media and update queue
   const changeMedia = useCallback(async () => {
@@ -134,7 +145,19 @@ const NextList = () => {
       })}
       <Row>
         Source directory:
-        <Form.Control type="text" value={sourceDir} onChange={e => setSourceDir(e.target.value)} />
+        <Form.Control
+          type="text"
+          value={sourceDir}
+          onChange={e => {
+            setSourceDir(e.target.value);
+            ConfigStore.Set(
+              'sourcedir.json',
+              JSON.stringify({
+                sourceDir: e.target.value,
+              }),
+            ).catch(console.error);
+          }}
+        />
       </Row>
     </>
   );
