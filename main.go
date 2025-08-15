@@ -17,7 +17,7 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
-	configStore, err := wailsconfigstore.NewConfigStore("My Application Name")
+	configStore, err := wailsconfigstore.NewConfigStore("viewparty")
 	if err != nil {
 		fmt.Printf("could not initialize the config store: %v\n", err)
 		return

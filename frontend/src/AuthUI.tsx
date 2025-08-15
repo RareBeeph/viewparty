@@ -1,44 +1,44 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
 import { Button, Container, Form, Row } from 'react-bootstrap';
-import * as ConfigStore from '../wailsjs/go/wailsconfigstore/ConfigStore';
+import { useQuery } from '@tanstack/react-query';
+import { getCredentials, saveCredentials } from './utils/config';
 
 const AuthUI = () => {
   const [{ connection }] = useContext(SocketContext);
-  const [host, setHost] = useState('localhost');
-  const [port, setPort] = useState(4455);
+  const [host, setHost] = useState('');
+  const [port, setPort] = useState(0);
   const [password, setPassword] = useState('');
   const [retry, setRetry] = useState(false);
+  const configQuery = useQuery({
+    queryKey: ['config'],
+    queryFn: getCredentials,
+  });
 
+  // Connect with entered credentials, saving on success
   const tryConnect = useCallback(
     () =>
       void (async () => {
         try {
           await connection.connect(`ws://${host}:${port}`, password);
+          await saveCredentials({ host, port, password });
         } catch (err) {
           console.error('OBS Connection error', err);
         }
       })(),
-    [connection, host, port, password],
+    [connection, host, port, password, configQuery.data],
   );
 
+  // Hydrate the credential data from the backend
   useEffect(() => {
-    ConfigStore.Get('auth.json', 'null')
-      .then(response => {
-        const data = JSON.parse(response as string) as {
-          host?: string;
-          port?: number;
-          password?: string;
-        };
-        if (!data) return;
+    if (!configQuery.data) return;
+    const { host, port, password } = configQuery.data;
+    setHost(host);
+    setPort(port);
+    setPassword(password);
+  }, [configQuery.data]);
 
-        if (data.host) setHost(data.host);
-        if (data.port) setPort(data.port);
-        if (data.password) setPassword(data.password);
-      })
-      .catch(console.error);
-  }, [connection]);
-
+  // Automatically retry connection
   useEffect(() => {
     const reconnectCallback = () => {
       console.log(retry);
@@ -52,19 +52,6 @@ const AuthUI = () => {
     };
   }, [connection, retry, tryConnect]);
 
-  const setConfig = (key: string, value: string | number) => {
-    ConfigStore.Set(
-      'auth.json',
-      JSON.stringify({
-        host: host,
-        port: port,
-        password: password,
-        [key]: value,
-      }),
-    ).catch(console.error);
-    return value;
-  };
-
   return (
     <Container className="mt-5">
       <Row className="border p-3 mx-3">
@@ -73,7 +60,7 @@ const AuthUI = () => {
           type="text"
           placeholder="localhost"
           value={host}
-          onChange={e => setHost(setConfig('host', e.target.value) as string)}
+          onChange={e => setHost(e.target.value)}
         />
       </Row>
       <Row className="border p-3 mx-3">
@@ -82,16 +69,12 @@ const AuthUI = () => {
           type="number"
           placeholder="4455"
           value={port}
-          onChange={e => setPort(setConfig('port', e.target.value) as number)}
+          onChange={e => setPort(parseInt(e.target.value))}
         />
       </Row>
       <Row className="border p-3 mx-3">
         <p>Password (leave empty if not applicable):</p>
-        <Form.Control
-          type="string"
-          value={password}
-          onChange={e => setPassword(setConfig('password', e.target.value) as string)}
-        />
+        <Form.Control type="string" value={password} onChange={e => setPassword(e.target.value)} />
       </Row>
       <Row className="border p-3 mx-3">
         <Button onClick={tryConnect}>Connect to OBS Websocket</Button>
