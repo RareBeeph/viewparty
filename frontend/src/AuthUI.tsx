@@ -26,7 +26,7 @@ const AuthUI = () => {
           console.error('OBS Connection error', err);
         }
       })(),
-    [connection, host, port, password, configQuery.data],
+    [connection, host, port, password],
   );
 
   // Hydrate the credential data from the backend

@@ -6,7 +6,7 @@ import { call, isMediaStopped, stopMedia } from '../utils/obs';
 import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from '../utils/queue';
 import { GetBasePath } from '../../wailsjs/go/main/App';
 import { useQuery } from '@tanstack/react-query';
-import * as ConfigStore from '../../wailsjs/go/wailsconfigstore/ConfigStore';
+import { getSourceDir, saveSourceDir } from '../utils/config';
 
 const justThrow = (e: unknown) => {
   throw e;
@@ -18,23 +18,23 @@ const lockoutThreshold = (numOptions: number) => {
 
 const NextList = () => {
   const [{ connection, inputName, settings }, dispatch] = useContext(SocketContext);
-  const [sourceDir, setSourceDir] = useState('./videos');
+  const [sourceDir, setSourceDir] = useState('');
   const videos = useQuery({
     queryKey: ['videoOptions', sourceDir],
     queryFn: async () => filteredVideoList(sourceDir),
   });
   const [queue, setQueue] = useState<string[]>([]);
   const [lockout, setLockout] = useState<string[]>([]);
+  const sdquery = useQuery({
+    queryKey: ['sourceDir'],
+    queryFn: getSourceDir,
+  });
 
   useEffect(() => {
-    ConfigStore.Get('sourcedir.json', 'null')
-      .then(response => {
-        const data = JSON.parse(response as string) as { sourceDir?: string };
-
-        if (data.sourceDir) setSourceDir(data.sourceDir);
-      })
-      .catch(console.error);
-  }, []);
+    if (!sdquery.data) return;
+    const sd = sdquery.data.sourceDir;
+    setSourceDir(sd);
+  }, [sdquery.data]);
 
   // Handler to change media and update queue
   const changeMedia = useCallback(async () => {
@@ -95,7 +95,6 @@ const NextList = () => {
       })().catch(console.error);
     }, 5000);
 
-    // (I need this vertical whitespace here for my sanity)
     return () => {
       clearInterval(mediaChangeInterval);
     };
@@ -150,12 +149,7 @@ const NextList = () => {
           value={sourceDir}
           onChange={e => {
             setSourceDir(e.target.value);
-            ConfigStore.Set(
-              'sourcedir.json',
-              JSON.stringify({
-                sourceDir: e.target.value,
-              }),
-            ).catch(console.error);
+            saveSourceDir(e.target.value).catch(console.error);
           }}
         />
       </Row>
