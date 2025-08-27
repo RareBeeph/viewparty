@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
 import { Button, Container, Form, Row } from 'react-bootstrap';
 import { useQuery } from '@tanstack/react-query';
-import { getCredentials, saveCredentials } from './utils/config';
+import { getConfig, saveConfig } from './utils/config';
 
 const AuthUI = () => {
   const [{ connection }] = useContext(SocketContext);
@@ -12,21 +12,22 @@ const AuthUI = () => {
   const [retry, setRetry] = useState(false);
   const configQuery = useQuery({
     queryKey: ['config'],
-    queryFn: getCredentials,
+    queryFn: getConfig,
   });
 
   // Connect with entered credentials, saving on success
   const tryConnect = useCallback(
     () =>
       void (async () => {
+        if (!configQuery.data) return;
         try {
           await connection.connect(`ws://${host}:${port}`, password);
-          await saveCredentials({ host, port, password });
+          await saveConfig({ ...configQuery.data, host, port, password });
         } catch (err) {
           console.error('OBS Connection error', err);
         }
       })(),
-    [connection, host, port, password],
+    [connection, host, port, password, configQuery.data],
   );
 
   // Hydrate the credential data from the backend

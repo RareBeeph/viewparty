@@ -1,39 +1,25 @@
 import * as ConfigStore from '../../wailsjs/go/wailsconfigstore/ConfigStore';
 
-interface Credentials {
+interface Config {
   host: string;
   port: number;
   password: string;
-}
-
-interface SourceDir {
   sourceDir: string;
 }
 
 // To save us some magic string repetition
-const AUTH_FILE = 'auth.json';
-const QUEUE_SOURCE_FILE = 'sourcedir.json';
+const CONFIG_FILE = 'config.json';
 
 const configDefaults = {
   host: 'localhost',
   port: 4455,
   password: '',
+  sourceDir: './videos',
 };
 
-const defaultSource = { sourceDir: './videos' };
-
-export const getCredentials = async () =>
+export const getConfig = async () =>
   JSON.parse(
-    (await ConfigStore.Get(AUTH_FILE, JSON.stringify(configDefaults))) as string,
-  ) as Credentials;
+    (await ConfigStore.Get(CONFIG_FILE, JSON.stringify(configDefaults))) as string,
+  ) as Config;
 
-export const saveCredentials = (creds: Credentials) =>
-  ConfigStore.Set(AUTH_FILE, JSON.stringify(creds));
-
-export const getSourceDir = async () =>
-  JSON.parse(
-    (await ConfigStore.Get(QUEUE_SOURCE_FILE, JSON.stringify(defaultSource))) as string,
-  ) as SourceDir;
-
-export const saveSourceDir = (sourceDir: string) =>
-  ConfigStore.Set(QUEUE_SOURCE_FILE, JSON.stringify({ sourceDir }));
+export const saveConfig = (creds: Config) => ConfigStore.Set(CONFIG_FILE, JSON.stringify(creds));

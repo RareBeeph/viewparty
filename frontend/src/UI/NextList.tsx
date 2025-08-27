@@ -6,7 +6,7 @@ import { call, isMediaStopped, stopMedia } from '../utils/obs';
 import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from '../utils/queue';
 import { GetBasePath } from '../../wailsjs/go/main/App';
 import { useQuery } from '@tanstack/react-query';
-import { getSourceDir, saveSourceDir } from '../utils/config';
+import { getConfig, saveConfig } from '../utils/config';
 
 const justThrow = (e: unknown) => {
   throw e;
@@ -25,16 +25,16 @@ const NextList = () => {
   });
   const [queue, setQueue] = useState<string[]>([]);
   const [lockout, setLockout] = useState<string[]>([]);
-  const sdquery = useQuery({
+  const configQuery = useQuery({
     queryKey: ['sourceDir'],
-    queryFn: getSourceDir,
+    queryFn: getConfig,
   });
 
   useEffect(() => {
-    if (!sdquery.data) return;
-    const sd = sdquery.data.sourceDir;
+    if (!configQuery.data) return;
+    const sd = configQuery.data.sourceDir;
     setSourceDir(sd);
-  }, [sdquery.data]);
+  }, [configQuery.data]);
 
   // Handler to change media and update queue
   const changeMedia = useCallback(async () => {
@@ -149,7 +149,8 @@ const NextList = () => {
           value={sourceDir}
           onChange={e => {
             setSourceDir(e.target.value);
-            saveSourceDir(e.target.value).catch(console.error);
+            if (!configQuery.data) return;
+            saveConfig({ ...configQuery.data, sourceDir: e.target.value }).catch(console.error);
           }}
         />
       </Row>
