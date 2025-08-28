@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
 import { Button, Container, Form, Row } from 'react-bootstrap';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getConfig, saveConfig } from './utils/config';
 
 const AuthUI = () => {
@@ -14,6 +14,16 @@ const AuthUI = () => {
     queryKey: ['config'],
     queryFn: getConfig,
   });
+  const queryClient = useQueryClient();
+  const configMutation = useMutation({
+    mutationFn: async (authData: { host: string; port: number; password: string }) => {
+      if (!configQuery.data) return;
+      await saveConfig({ ...configQuery.data, ...authData });
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['config'] });
+    },
+  });
 
   // Connect with entered credentials, saving on success
   const tryConnect = useCallback(
@@ -22,12 +32,12 @@ const AuthUI = () => {
         if (!configQuery.data) return;
         try {
           await connection.connect(`ws://${host}:${port}`, password);
-          await saveConfig({ ...configQuery.data, host, port, password });
+          configMutation.mutate({ host, port, password });
         } catch (err) {
           console.error('OBS Connection error', err);
         }
       })(),
-    [connection, host, port, password, configQuery.data],
+    [connection, host, port, password, configQuery.data, configMutation],
   );
 
   // Hydrate the credential data from the backend

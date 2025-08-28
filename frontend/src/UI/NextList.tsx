@@ -5,7 +5,7 @@ import { Action, SocketContext } from '../SocketProvider';
 import { call, isMediaStopped, stopMedia } from '../utils/obs';
 import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from '../utils/queue';
 import { GetBasePath } from '../../wailsjs/go/main/App';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getConfig, saveConfig } from '../utils/config';
 
 const justThrow = (e: unknown) => {
@@ -26,8 +26,18 @@ const NextList = () => {
   const [queue, setQueue] = useState<string[]>([]);
   const [lockout, setLockout] = useState<string[]>([]);
   const configQuery = useQuery({
-    queryKey: ['sourceDir'],
+    queryKey: ['config'],
     queryFn: getConfig,
+  });
+  const queryClient = useQueryClient();
+  const configMutation = useMutation({
+    mutationFn: async (sourceDir: string) => {
+      if (!configQuery.data) return;
+      await saveConfig({ ...configQuery.data, sourceDir });
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['config'] });
+    },
   });
 
   useEffect(() => {
@@ -150,7 +160,7 @@ const NextList = () => {
           onChange={e => {
             setSourceDir(e.target.value);
             if (!configQuery.data) return;
-            saveConfig({ ...configQuery.data, sourceDir: e.target.value }).catch(console.error);
+            configMutation.mutate(e.target.value);
           }}
         />
       </Row>

@@ -1,6 +1,6 @@
 import * as ConfigStore from '../../wailsjs/go/wailsconfigstore/ConfigStore';
 
-interface Config {
+export interface Config {
   host: string;
   port: number;
   password: string;
