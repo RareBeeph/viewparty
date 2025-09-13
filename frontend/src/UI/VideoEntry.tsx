@@ -1,5 +1,5 @@
-import { Form } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
+import { Select } from '@mui/material';
 
 const VideoEntry = ({
   name,
@@ -25,7 +25,7 @@ const VideoEntry = ({
   }
 
   return (
-    <Form.Select
+    <Select
       onChange={e => {
         setSelected(e.target.value);
         updateSelf(e.target.value);
@@ -39,7 +39,7 @@ const VideoEntry = ({
           </option>
         );
       })}
-    </Form.Select>
+    </Select>
   );
 };
 

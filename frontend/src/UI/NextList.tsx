@@ -1,12 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import VideoEntry from './VideoEntry';
-import { Button, Row, Col, Form } from 'react-bootstrap';
 import { Action, SocketContext } from '../SocketProvider';
 import { call, isMediaStopped, stopMedia } from '../utils/obs';
 import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from '../utils/queue';
 import { GetBasePath } from '../../wailsjs/go/main/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getConfig, saveConfig } from '../utils/config';
+import { Button, IconButton, Paper, Stack, TextField, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/AddCircleOutline';
+import DeleteIcon from '@mui/icons-material/DeleteOutline';
 
 const justThrow = (e: unknown) => {
   throw e;
@@ -118,53 +120,74 @@ const NextList = () => {
   };
 
   return (
-    <>
-      <Row>
-        <Button
-          onClick={() => {
-            skip().catch(justThrow);
-          }}
-        >
-          Skip
-        </Button>
-      </Row>
-      <Row>
-        <Button onClick={() => setQueue(addBelow(queue, -1, defaultName))}>Add Below</Button>
-      </Row>
-      {queue.map((name, idx) => {
-        return (
-          <Row key={idx} value={name}>
-            <Col>
-              <Button onClick={() => setQueue(addBelow(queue, idx, defaultName))}>Add Below</Button>
-            </Col>
-            <Col>
-              <VideoEntry
-                name={name}
-                videos={videos.isSuccess ? videos.data : []}
-                updateSelf={(name: string) => {
-                  setQueue(updateOne(queue, idx, name));
-                }}
-              />
-            </Col>
-            <Col>
-              <Button onClick={() => setQueue(removeOne(queue, idx))}>Remove</Button>
-            </Col>
-          </Row>
-        );
-      })}
-      <Row>
-        Source directory:
-        <Form.Control
-          type="text"
-          value={sourceDir}
-          onChange={e => {
-            setSourceDir(e.target.value);
-            if (!configQuery.data) return;
-            configMutation.mutate(e.target.value);
-          }}
-        />
-      </Row>
-    </>
+    <Stack spacing={1}>
+      <Typography variant="body1">
+        Current Video:{' '}
+        {settings.local_file.slice(settings.local_file.lastIndexOf('/') + 1) || 'n/a'}
+      </Typography>
+
+      <Button
+        variant="contained"
+        onClick={() => {
+          skip().catch(justThrow);
+        }}
+      >
+        Skip
+      </Button>
+
+      <Stack spacing={1}>
+        <Paper elevation={2} sx={{ padding: 2 }}>
+          <Typography variant="body1">Queue:</Typography>
+          <Stack direction="row">
+            {/* hackjob */}
+            <Stack spacing={3}>
+              {['first'].concat(queue).map((_name, idx) => {
+                return (
+                  <IconButton
+                    key={idx}
+                    onClick={() => setQueue(addBelow(queue, idx - 1, defaultName))}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                );
+              })}
+            </Stack>
+
+            <Stack spacing={1} sx={{ paddingY: 3 }}>
+              {queue.map((name, idx) => {
+                return (
+                  <Stack key={idx} direction="row">
+                    <IconButton onClick={() => setQueue(removeOne(queue, idx))}>
+                      <DeleteIcon />
+                    </IconButton>
+                    <VideoEntry
+                      name={name}
+                      videos={videos.isSuccess ? videos.data : []}
+                      updateSelf={(name: string) => {
+                        setQueue(updateOne(queue, idx, name));
+                      }}
+                    />
+                  </Stack>
+                );
+              })}
+            </Stack>
+          </Stack>
+        </Paper>
+
+        <Paper elevation={3} sx={{ padding: 2 }}>
+          <Typography variant="body1">Source directory: </Typography>
+          <TextField
+            value={sourceDir}
+            fullWidth
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSourceDir(e.target.value);
+              if (!configQuery.data) return;
+              configMutation.mutate(e.target.value);
+            }}
+          />
+        </Paper>
+      </Stack>
+    </Stack>
   );
 };
 

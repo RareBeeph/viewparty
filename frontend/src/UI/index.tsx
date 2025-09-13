@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { SocketContext } from '../SocketProvider';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Paper, Stack, Typography } from '@mui/material';
 
 import HelpModal from './HelpModal';
 import NextList from './NextList';
@@ -8,7 +8,7 @@ import InputSelect from './InputSelect';
 import { getInputList } from '../utils/obs';
 
 const UI = () => {
-  const [{ connection, inputName, settings }] = useContext(SocketContext);
+  const [{ connection, inputName /*, settings*/ }] = useContext(SocketContext);
   const [options, setOptions] = useState([] as Record<'inputName', string>[]);
 
   const inputListCallback = useCallback(() => {
@@ -27,21 +27,20 @@ const UI = () => {
     <>
       <HelpModal />
 
-      <Container className="mt-5">
-        <Row>
-          <Col className="border p-3 mx-3">
-            <p>Current Input: {inputName || 'n/a'}</p>
-            <InputSelect options={options.map(e => e.inputName)} />
-          </Col>
-        </Row>
-        <Row className="border p-3 mx-3">
-          <p>
-            Current Video:{' '}
-            {settings.local_file.slice(settings.local_file.lastIndexOf('/') + 1) || 'n/a'}
-          </p>
+      <Stack spacing={2} sx={{ margin: 2 }}>
+        <Paper elevation={1} sx={{ padding: 2 }}>
+          <Stack spacing={1}>
+            <Typography variant="body1">Current Input: {inputName ?? 'n/a'}</Typography>
+            <Paper elevation={2} sx={{ padding: 2 }}>
+              <InputSelect label={'Input'} options={options.map(e => e.inputName)} />
+            </Paper>
+          </Stack>
+        </Paper>
+
+        <Paper elevation={1} sx={{ padding: 2 }}>
           <NextList />
-        </Row>
-      </Container>
+        </Paper>
+      </Stack>
     </>
   );
 };

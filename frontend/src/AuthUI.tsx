@@ -1,6 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
-import { Button, Container, Form, Row } from 'react-bootstrap';
+import {
+  Button,
+  TextField,
+  Stack,
+  Switch,
+  FormControlLabel,
+  Paper,
+  Typography,
+} from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getConfig, saveConfig } from './utils/config';
 
@@ -64,40 +72,46 @@ const AuthUI = () => {
   }, [connection, retry, tryConnect]);
 
   return (
-    <Container className="mt-5">
-      <Row className="border p-3 mx-3">
-        <p>Host:</p>
-        <Form.Control
-          type="text"
-          placeholder="localhost"
-          value={host}
-          onChange={e => setHost(e.target.value)}
-        />
-      </Row>
-      <Row className="border p-3 mx-3">
-        <p>Port:</p>
-        <Form.Control
-          type="number"
-          placeholder="4455"
-          value={port}
-          onChange={e => setPort(parseInt(e.target.value))}
-        />
-      </Row>
-      <Row className="border p-3 mx-3">
-        <p>Password (leave empty if not applicable):</p>
-        <Form.Control type="string" value={password} onChange={e => setPassword(e.target.value)} />
-      </Row>
-      <Row className="border p-3 mx-3">
-        <Button onClick={tryConnect}>Connect to OBS Websocket</Button>
-        <Form.Switch
-          inline
-          label="Auto-retry every 5 seconds"
-          onChange={e => {
-            setRetry(e.target.checked);
-          }}
-        />
-      </Row>
-    </Container>
+    <Paper elevation={1} sx={{ margin: 2, padding: 2 }}>
+      <Stack spacing={1}>
+        <Paper elevation={2} sx={{ padding: 2 }}>
+          <Stack spacing={1}>
+            <Typography variant="body1">Host:</Typography>
+            <TextField
+              fullWidth
+              placeholder="localhost"
+              value={host}
+              onChange={e => setHost(e.target.value)}
+            />
+            <Typography variant="body1">Port:</Typography>
+            <TextField
+              fullWidth
+              type="number"
+              placeholder="4455"
+              value={port}
+              onChange={e => setPort(parseInt(e.target.value))}
+            />
+            <Typography variant="body1">Password (leave empty if not applicable):</Typography>
+            <TextField fullWidth value={password} onChange={e => setPassword(e.target.value)} />
+          </Stack>
+        </Paper>
+        <Stack className="border p-3 mx-3">
+          <Button variant="contained" onClick={tryConnect}>
+            Connect to OBS Websocket
+          </Button>
+          <FormControlLabel
+            control={
+              <Switch
+                onChange={e => {
+                  setRetry(e.target.checked);
+                }}
+              />
+            }
+            label="Auto-retry every 5 seconds"
+          />
+        </Stack>
+      </Stack>
+    </Paper>
   );
 };
 

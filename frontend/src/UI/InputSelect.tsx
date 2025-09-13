@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
 import { SocketContext, Action } from '../SocketProvider';
-import { Button, Form } from 'react-bootstrap';
+import { Button, FormControl, InputLabel, Select, MenuItem, Stack } from '@mui/material';
 import { call, stopMedia } from '../utils/obs';
 
-const InputSelect = ({ options }: { options: string[] }) => {
+const InputSelect = ({ label, options }: { label: string; options: string[] }) => {
   const [selected, setSelected] = useState('');
   const [store, dispatch] = useContext(SocketContext);
 
@@ -40,20 +40,31 @@ const InputSelect = ({ options }: { options: string[] }) => {
   }
 
   return (
-    <>
-      <Form.Select onChange={e => setSelected(e.target.value)}>
-        {options.map((name, idx) => {
-          return (
-            <option key={idx} value={name}>
-              {name}
-            </option>
-          );
-        })}
-      </Form.Select>
-      <Button variant="primary" onClick={() => void submit()}>
+    <Stack spacing={1}>
+      <FormControl fullWidth>
+        <InputLabel id="inputs">{label}</InputLabel>
+        <Select
+          labelId="inputs"
+          label={label}
+          variant="outlined"
+          defaultValue=""
+          onChange={e => {
+            setSelected(e.target.value);
+          }}
+        >
+          {options.map((name, idx) => {
+            return (
+              <MenuItem key={idx} value={name}>
+                {name}
+              </MenuItem>
+            );
+          })}
+        </Select>
+      </FormControl>
+      <Button variant="contained" onClick={() => void submit()}>
         Submit
       </Button>
-    </>
+    </Stack>
   );
 };
 
