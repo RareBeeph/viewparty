@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Select } from '@mui/material';
+import { MenuItem, Select } from '@mui/material';
 
 const VideoEntry = ({
   name,
@@ -34,9 +34,9 @@ const VideoEntry = ({
     >
       {videos.map((name: string, idx: number) => {
         return (
-          <option key={idx} value={name}>
+          <MenuItem key={idx} value={name}>
             {name}
-          </option>
+          </MenuItem>
         );
       })}
     </Select>
