@@ -8,9 +8,10 @@ import InputSelect from './InputSelect';
 import { getInputList } from '../utils/obs';
 
 const UI = () => {
-  const [{ connection, inputName /*, settings*/ }] = useContext(SocketContext);
+  const [{ connection, inputName }] = useContext(SocketContext);
   const [options, setOptions] = useState([] as Record<'inputName', string>[]);
 
+  // TODO: move this to react-query
   const inputListCallback = useCallback(() => {
     getInputList(connection)
       .then(list => setOptions(list))
@@ -27,17 +28,18 @@ const UI = () => {
     <>
       <HelpModal />
 
-      <Stack spacing={2} sx={{ margin: 2 }}>
-        <Paper elevation={1} sx={{ padding: 2 }}>
+      {/* MUI has shorthand for spacing props - https://mui.com/system/spacing/ */}
+      <Stack spacing={2} sx={{ m: 2 }}>
+        <Paper elevation={1} sx={{ p: 2 }}>
           <Stack spacing={1}>
             <Typography variant="body1">Current Input: {inputName ?? 'n/a'}</Typography>
-            <Paper elevation={2} sx={{ padding: 2 }}>
+            <Paper elevation={2} sx={{ p: 2 }}>
               <InputSelect label={'Input'} options={options.map(e => e.inputName)} />
             </Paper>
           </Stack>
         </Paper>
 
-        <Paper elevation={1} sx={{ padding: 2 }}>
+        <Paper elevation={1} sx={{ p: 2 }}>
           <NextList />
         </Paper>
       </Stack>

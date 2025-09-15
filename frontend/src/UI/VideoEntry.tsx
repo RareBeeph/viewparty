@@ -4,34 +4,31 @@ import { MenuItem, Select } from '@mui/material';
 const VideoEntry = ({
   name,
   videos,
-  updateSelf,
+  onSelect,
 }: {
   name: string;
   videos: string[];
-  updateSelf: (name: string) => void;
+  onSelect: (name: string) => void;
 }) => {
   const [selected, setSelected] = useState(name);
+  const select = (video: string) => {
+    setSelected(video);
+    onSelect(video);
+  };
 
   const firstvideo = videos?.[0];
   useEffect(() => {
     if (firstvideo && !selected) {
-      setSelected(firstvideo);
-      updateSelf(firstvideo);
+      select(firstvideo);
     }
-  }, [videos, firstvideo, selected, updateSelf]);
+  }, [videos, firstvideo, selected, select]);
 
   if (!videos) {
     return null;
   }
 
   return (
-    <Select
-      onChange={e => {
-        setSelected(e.target.value);
-        updateSelf(e.target.value);
-      }}
-      value={name}
-    >
+    <Select onChange={e => void select(e.target.value)} value={name}>
       {videos.map((name: string, idx: number) => {
         return (
           <MenuItem key={idx} value={name}>

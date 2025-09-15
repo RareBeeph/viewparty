@@ -163,7 +163,7 @@ const NextList = () => {
                     <VideoEntry
                       name={name}
                       videos={videos.isSuccess ? videos.data : []}
-                      updateSelf={(name: string) => {
+                      onSelect={(name: string) => {
                         setQueue(updateOne(queue, idx, name));
                       }}
                     />
