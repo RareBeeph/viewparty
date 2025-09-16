@@ -141,38 +141,34 @@ const NextList = () => {
           <Stack spacing={1}>
             {/* zeroth row of the following map, to provide an Add button for before the first entry */}
             <Stack key={0} direction="row">
-              <IconButton
-                onClick={() => setQueue(addBelow(queue, -1, defaultName))}
-              >
+              <IconButton onClick={() => setQueue(addBelow(queue, -1, defaultName))}>
                 <AddIcon />
               </IconButton>
             </Stack>
 
             {queue.map((name, idx) => {
               return (
-                <Stack key={idx+1} direction="row">
+                <Stack key={idx + 1} direction="row">
                   {/* TODO: deal with magic positioning numbers and div shenanigans */}
                   <div>
-                  <IconButton
-                    sx={{position: 'relative', top: 13}}
-                    onClick={() => setQueue(addBelow(queue, idx, defaultName))}
-                  >
-                    <AddIcon />
-                  </IconButton>
+                    <IconButton
+                      sx={{ position: 'relative', top: 13 }}
+                      onClick={() => setQueue(addBelow(queue, idx, defaultName))}
+                    >
+                      <AddIcon />
+                    </IconButton>
                   </div>
 
                   <div>
-                  <IconButton
-                    sx={{position: 'relative', top: -17}}
-                    onClick={() => setQueue(removeOne(queue, idx))}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                    <IconButton
+                      sx={{ position: 'relative', top: -17 }}
+                      onClick={() => setQueue(removeOne(queue, idx))}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </div>
 
-                  <Container
-                    sx={{position: 'relative', top: -25}}
-                  >
+                  <Container sx={{ position: 'relative', top: -25 }}>
                     <VideoEntry
                       name={name}
                       videos={videos.isSuccess ? videos.data : []}
