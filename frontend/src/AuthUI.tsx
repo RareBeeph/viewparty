@@ -72,9 +72,9 @@ const AuthUI = () => {
   }, [connection, retry, tryConnect]);
 
   return (
-    <Paper elevation={1} sx={{ margin: 2, padding: 2 }}>
+    <Paper elevation={1} sx={{ m: 2, p: 2 }}>
       <Stack spacing={1}>
-        <Paper elevation={2} sx={{ padding: 2 }}>
+        <Paper elevation={2} sx={{ p: 2 }}>
           <Stack spacing={1}>
             <Typography variant="body1">Host:</Typography>
             <TextField

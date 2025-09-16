@@ -6,7 +6,7 @@ import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from
 import { GetBasePath } from '../../wailsjs/go/main/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getConfig, saveConfig } from '../utils/config';
-import { Button, IconButton, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Button, Container, IconButton, Paper, Stack, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 
@@ -136,30 +136,43 @@ const NextList = () => {
       </Button>
 
       <Stack spacing={1}>
-        <Paper elevation={2} sx={{ padding: 2 }}>
+        <Paper elevation={2} sx={{ p: 2 }}>
           <Typography variant="body1">Queue:</Typography>
-          <Stack direction="row">
-            {/* hackjob */}
-            <Stack spacing={3}>
-              {['first'].concat(queue).map((_name, idx) => {
-                return (
+          <Stack spacing={1}>
+            {/* zeroth row of the following map, to provide an Add button for before the first entry */}
+            <Stack key={0} direction="row">
+              <IconButton
+                onClick={() => setQueue(addBelow(queue, -1, defaultName))}
+              >
+                <AddIcon />
+              </IconButton>
+            </Stack>
+
+            {queue.map((name, idx) => {
+              return (
+                <Stack key={idx+1} direction="row">
+                  {/* TODO: deal with magic positioning numbers and div shenanigans */}
+                  <div>
                   <IconButton
-                    key={idx}
-                    onClick={() => setQueue(addBelow(queue, idx - 1, defaultName))}
+                    sx={{position: 'relative', top: 13}}
+                    onClick={() => setQueue(addBelow(queue, idx, defaultName))}
                   >
                     <AddIcon />
                   </IconButton>
-                );
-              })}
-            </Stack>
+                  </div>
 
-            <Stack spacing={1} sx={{ paddingY: 3 }}>
-              {queue.map((name, idx) => {
-                return (
-                  <Stack key={idx} direction="row">
-                    <IconButton onClick={() => setQueue(removeOne(queue, idx))}>
-                      <DeleteIcon />
-                    </IconButton>
+                  <div>
+                  <IconButton
+                    sx={{position: 'relative', top: -17}}
+                    onClick={() => setQueue(removeOne(queue, idx))}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                  </div>
+
+                  <Container
+                    sx={{position: 'relative', top: -25}}
+                  >
                     <VideoEntry
                       name={name}
                       videos={videos.isSuccess ? videos.data : []}
@@ -167,14 +180,14 @@ const NextList = () => {
                         setQueue(updateOne(queue, idx, name));
                       }}
                     />
-                  </Stack>
-                );
-              })}
-            </Stack>
+                  </Container>
+                </Stack>
+              );
+            })}
           </Stack>
         </Paper>
 
-        <Paper elevation={3} sx={{ padding: 2 }}>
+        <Paper elevation={3} sx={{ p: 2 }}>
           <Typography variant="body1">Source directory: </Typography>
           <TextField
             value={sourceDir}
