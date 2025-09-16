@@ -146,40 +146,34 @@ const NextList = () => {
               </IconButton>
             </Stack>
 
-            {queue.map((name, idx) => {
-              return (
-                <Stack key={idx + 1} direction="row">
-                  {/* TODO: deal with magic positioning numbers and div shenanigans */}
-                  <div>
-                    <IconButton
-                      sx={{ position: 'relative', top: 13 }}
-                      onClick={() => setQueue(addBelow(queue, idx, defaultName))}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  </div>
+            {queue.map((name, idx) => (
+              <Stack key={idx + 1} direction="row" sx={{ alignItems: 'flex-start' }}>
+                {/* TODO: deal with magic positioning numbers and div shenanigans */}
+                <IconButton
+                  sx={{ position: 'relative', top: 13 }}
+                  onClick={() => setQueue(addBelow(queue, idx, defaultName))}
+                >
+                  <AddIcon />
+                </IconButton>
 
-                  <div>
-                    <IconButton
-                      sx={{ position: 'relative', top: -17 }}
-                      onClick={() => setQueue(removeOne(queue, idx))}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </div>
+                <IconButton
+                  sx={{ position: 'relative', top: -17 }}
+                  onClick={() => setQueue(removeOne(queue, idx))}
+                >
+                  <DeleteIcon />
+                </IconButton>
 
-                  <Container sx={{ position: 'relative', top: -25 }}>
-                    <VideoEntry
-                      name={name}
-                      videos={videos.isSuccess ? videos.data : []}
-                      onSelect={(name: string) => {
-                        setQueue(updateOne(queue, idx, name));
-                      }}
-                    />
-                  </Container>
-                </Stack>
-              );
-            })}
+                <Container sx={{ position: 'relative', top: -25 }}>
+                  <VideoEntry
+                    name={name}
+                    videos={videos.isSuccess ? videos.data : []}
+                    onSelect={(name: string) => {
+                      setQueue(updateOne(queue, idx, name));
+                    }}
+                  />
+                </Container>
+              </Stack>
+            ))}
           </Stack>
         </Paper>
 
