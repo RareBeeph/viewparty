@@ -4,6 +4,8 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
@@ -51,4 +53,17 @@ func (a *App) GetBasePath(srcDir string) string {
 	}
 
 	return abs + "/"
+}
+
+func (a *App) DirDialog() string {
+	dir, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select Folder",
+	})
+
+	if err != nil {
+		println(err.Error())
+		return ""
+	}
+
+	return dir
 }

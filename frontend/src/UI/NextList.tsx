@@ -3,10 +3,10 @@ import VideoEntry from './VideoEntry';
 import { Action, SocketContext } from '../SocketProvider';
 import { call, isMediaStopped, stopMedia } from '../utils/obs';
 import { addBelow, pickNextVideo, removeOne, updateOne, filteredVideoList } from '../utils/queue';
-import { GetBasePath } from '../../wailsjs/go/main/App';
+import { DirDialog, GetBasePath } from '../../wailsjs/go/main/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getConfig, saveConfig } from '../utils/config';
-import { Button, Container, IconButton, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Button, Container, IconButton, Paper, Stack, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 
@@ -178,16 +178,21 @@ const NextList = () => {
         </Paper>
 
         <Paper elevation={3} sx={{ p: 2 }}>
-          <Typography variant="body1">Source directory: </Typography>
-          <TextField
-            value={sourceDir}
-            fullWidth
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setSourceDir(e.target.value);
-              if (!configQuery.data) return;
-              configMutation.mutate(e.target.value);
+          <Typography variant="body1">Source directory: {sourceDir}</Typography>
+          <Button
+            variant="contained"
+            onClick={() => {
+              (async () => {
+                const dir = await DirDialog();
+                if (!dir) return;
+                setSourceDir(dir);
+                if (!configQuery.data) return;
+                configMutation.mutate(dir);
+              })().catch(console.error);
             }}
-          />
+          >
+            Change
+          </Button>
         </Paper>
       </Stack>
     </Stack>

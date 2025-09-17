@@ -28,7 +28,6 @@ const UI = () => {
     <>
       <HelpModal />
 
-      {/* MUI has shorthand for spacing props - https://mui.com/system/spacing/ */}
       <Stack spacing={2} sx={{ m: 2 }}>
         <Paper elevation={1} sx={{ p: 2 }}>
           <Stack spacing={1}>
