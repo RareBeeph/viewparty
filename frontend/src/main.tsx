@@ -5,6 +5,7 @@ import UI from './UI';
 import AuthWrapper from './AuthWrapper';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import { SnackbarProvider } from 'notistack';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
@@ -23,9 +24,11 @@ root.render(
       <CssBaseline>
         <QueryClientProvider client={queryclient}>
           <SocketProvider>
-            <AuthWrapper>
-              <UI />
-            </AuthWrapper>
+            <SnackbarProvider>
+              <AuthWrapper>
+                <UI />
+              </AuthWrapper>
+            </SnackbarProvider>
           </SocketProvider>
         </QueryClientProvider>
       </CssBaseline>

@@ -20,6 +20,7 @@ func main() {
 
 	configStore, err := wailsconfigstore.NewConfigStore("viewparty")
 	if err != nil {
+		// error too early to display, and not particularly recoverable
 		fmt.Printf("could not initialize the config store: %v\n", err)
 		return
 	}
@@ -44,6 +45,7 @@ func main() {
 	})
 
 	if err != nil {
+		// if we get here, something has already gone quite wrong
 		println("Error:", err.Error())
 	}
 }

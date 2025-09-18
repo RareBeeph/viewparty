@@ -9,10 +9,11 @@ import { getConfig, saveConfig } from '../utils/config';
 import { Button, Container, IconButton, Paper, Stack, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
+import { useSnackbar } from 'notistack';
 
-const justThrow = (e: unknown) => {
-  throw e;
-};
+// const justThrow = (e: unknown) => {
+//   throw e;
+// };
 
 const lockoutThreshold = (numOptions: number) => {
   return Math.min(Math.floor(numOptions * 0.5), 10);
@@ -41,6 +42,7 @@ const NextList = () => {
       await queryClient.invalidateQueries({ queryKey: ['config'] });
     },
   });
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (!configQuery.data) return;
@@ -75,8 +77,16 @@ const NextList = () => {
         inputName: inputName,
         inputSettings: { ...settings, local_file: nextPath },
       });
-    } catch (e) {
-      console.error('Failed to change media', e);
+    } catch (reason) {
+      enqueueSnackbar(
+        <>
+          {'Failed to set currently playing media.'}
+          <br />
+          {reason instanceof Error
+            ? '(' + reason.toString() + ')'
+            : '(Error, but `reason` is not an Error?)'}
+        </>,
+      );
       // future media change attempts short-circuit on empty input name
       // so this assign means we only fail once
       dispatch({ type: Action.SetInput, data: '' });
@@ -86,6 +96,7 @@ const NextList = () => {
   }, [
     setQueue,
     dispatch,
+    enqueueSnackbar,
     queue,
     inputName,
     settings,
@@ -104,13 +115,19 @@ const NextList = () => {
         if (connection.identified && mediaStopped) {
           await changeMedia();
         }
-      })().catch(console.error);
+      })().catch(reason => {
+        enqueueSnackbar(
+          <>
+            {'Failed while trying to change media.'} <br /> {'(' + reason + ')'}
+          </>,
+        );
+      });
     }, 5000);
 
     return () => {
       clearInterval(mediaChangeInterval);
     };
-  }, [connection, inputName, changeMedia]);
+  }, [connection, inputName, changeMedia, enqueueSnackbar]);
 
   const defaultName = videos.data?.[0] ?? '';
 
@@ -129,7 +146,13 @@ const NextList = () => {
       <Button
         variant="contained"
         onClick={() => {
-          skip().catch(justThrow);
+          skip().catch(reason => {
+            enqueueSnackbar(
+              <>
+                {'Failed to skip currently playing media.'} <br /> {'(' + reason + ')'}
+              </>,
+            );
+          });
         }}
       >
         Skip
@@ -188,7 +211,13 @@ const NextList = () => {
                 setSourceDir(dir);
                 if (!configQuery.data) return;
                 configMutation.mutate(dir);
-              })().catch(console.error);
+              })().catch(reason => {
+                enqueueSnackbar(
+                  <>
+                    {'Failed to change selected directory.'} <br /> {'(' + reason + ')'}
+                  </>,
+                );
+              });
             }}
           >
             Change

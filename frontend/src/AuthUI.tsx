@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getConfig, saveConfig } from './utils/config';
+import { useSnackbar } from 'notistack';
 
 const AuthUI = () => {
   const [{ connection }] = useContext(SocketContext);
@@ -32,6 +33,7 @@ const AuthUI = () => {
       await queryClient.invalidateQueries({ queryKey: ['config'] });
     },
   });
+  const { enqueueSnackbar } = useSnackbar();
 
   // Connect with entered credentials, saving on success
   const tryConnect = useCallback(
@@ -41,11 +43,19 @@ const AuthUI = () => {
         try {
           await connection.connect(`ws://${host}:${port}`, password);
           configMutation.mutate({ host, port, password });
-        } catch (err) {
-          console.error('OBS Connection error', err);
+        } catch (reason) {
+          enqueueSnackbar(
+            <>
+              {'Failed to connect to OBS.'}
+              <br />
+              {reason instanceof Error
+                ? '(' + reason.toString() + ')'
+                : '(Error, and reason is not an Error?)'}
+            </>,
+          );
         }
       })(),
-    [connection, host, port, password, configQuery.data, configMutation],
+    [connection, host, port, password, configQuery.data, configMutation, enqueueSnackbar],
   );
 
   // Hydrate the credential data from the backend

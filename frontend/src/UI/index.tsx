@@ -6,17 +6,25 @@ import HelpModal from './HelpModal';
 import NextList from './NextList';
 import InputSelect from './InputSelect';
 import { getInputList } from '../utils/obs';
+import { useSnackbar } from 'notistack';
 
 const UI = () => {
   const [{ connection, inputName }] = useContext(SocketContext);
   const [options, setOptions] = useState([] as Record<'inputName', string>[]);
+  const { enqueueSnackbar } = useSnackbar();
 
   // TODO: move this to react-query
   const inputListCallback = useCallback(() => {
     getInputList(connection)
       .then(list => setOptions(list))
-      .catch(console.error);
-  }, [connection]);
+      .catch(reason => {
+        enqueueSnackbar(
+          <>
+            {'Failed to query media sources from OBS.'} <br /> {'(' + reason + ')'}
+          </>,
+        );
+      });
+  }, [connection, enqueueSnackbar]);
 
   useEffect(() => {
     inputListCallback(); // so we refresh our input list immediately

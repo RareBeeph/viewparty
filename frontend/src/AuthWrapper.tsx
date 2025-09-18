@@ -1,6 +1,7 @@
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import { SocketContext } from './SocketProvider';
 import AuthUI from './AuthUI';
+import { useSnackbar } from 'notistack';
 
 interface Props {
   children: ReactNode;
@@ -9,10 +10,13 @@ interface Props {
 export default function AuthWrapper({ children }: Props) {
   const [{ connection }] = useContext(SocketContext);
   const [connected, setConnected] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (!connection) {
-      console.error('Attempted to run AuthWrapper Effect callback while OBS websocket is null.');
+      enqueueSnackbar(
+        'Error: Attempted to run AuthWrapper Effect callback while OBS websocket object is null.',
+      );
       return;
     }
 
@@ -38,7 +42,7 @@ export default function AuthWrapper({ children }: Props) {
       connection.off('Identified'); // remove any residual listeners (not sure if this is necessary)
       connection.off('ConnectionClosed');
     };
-  }, [connection]); // run once, unless the reference to obs.connection changes (i.e. from null to not null)
+  }, [connection, enqueueSnackbar]); // ideally: run once, unless the reference to obs.connection changes (i.e. from null to not null)
 
   if (!connected) {
     console.log('not connected yet');
