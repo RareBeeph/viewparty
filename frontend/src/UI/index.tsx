@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { SocketContext } from '../SocketProvider';
 import { Paper, Stack, Typography } from '@mui/material';
 
@@ -6,32 +6,20 @@ import HelpModal from './HelpModal';
 import NextList from './NextList';
 import InputSelect from './InputSelect';
 import { getInputList } from '../utils/obs';
-import { useSnackbar } from 'notistack';
+import { useQuery } from '@tanstack/react-query';
 
 const UI = () => {
   const [{ connection, inputName }] = useContext(SocketContext);
-  const [options, setOptions] = useState([] as Record<'inputName', string>[]);
-  const { enqueueSnackbar } = useSnackbar();
 
-  // TODO: move this to react-query
-  const inputListCallback = useCallback(() => {
-    getInputList(connection)
-      .then(list => setOptions(list))
-      .catch(reason => {
-        enqueueSnackbar(
-          <>
-            {'Failed to query media sources from OBS.'} <br /> {'(' + reason + ')'}
-          </>,
-        );
-      });
-  }, [connection, enqueueSnackbar]);
+  const inputListQuery = useQuery({
+    queryKey: ['inputList'],
+    queryFn: () => {
+      console.log('refetching');
+      return getInputList(connection);
+    }, // connection is an unmarked dependency, but my intuition is saying that's not the particular problem i'm having?
+  });
 
-  useEffect(() => {
-    inputListCallback(); // so we refresh our input list immediately
-    const interval = setInterval(inputListCallback, 5000);
-    return () => clearInterval(interval);
-  }, [inputListCallback]);
-
+  const options = inputListQuery.isSuccess ? (inputListQuery.data.map(e => e.inputName) ?? []) : [];
   return (
     <>
       <HelpModal />
@@ -41,7 +29,7 @@ const UI = () => {
           <Stack spacing={1}>
             <Typography variant="body1">Current Input: {inputName ?? 'n/a'}</Typography>
             <Paper elevation={2} sx={{ p: 2 }}>
-              <InputSelect label={'Input'} options={options.map(e => e.inputName)} />
+              <InputSelect label={'Input'} options={options} />
             </Paper>
           </Stack>
         </Paper>

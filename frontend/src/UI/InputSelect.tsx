@@ -2,10 +2,12 @@ import { useContext, useEffect, useState } from 'react';
 import { SocketContext, Action } from '../SocketProvider';
 import { Button, FormControl, InputLabel, Select, MenuItem, Stack } from '@mui/material';
 import { call, stopMedia } from '../utils/obs';
+import { useSnackbar } from 'notistack';
 
 const InputSelect = ({ label, options }: { label: string; options: string[] }) => {
   const [selected, setSelected] = useState('');
   const [store, dispatch] = useContext(SocketContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   const submit = async () => {
     const oldInputName = store.inputName;
@@ -61,7 +63,20 @@ const InputSelect = ({ label, options }: { label: string; options: string[] }) =
           })}
         </Select>
       </FormControl>
-      <Button variant="contained" onClick={() => void submit()}>
+      <Button
+        variant="contained"
+        onClick={() =>
+          void submit().catch(reason => {
+            enqueueSnackbar(
+              <>
+                {'Failed to change selected input.'}
+                <br />
+                {'(' + reason + ')'}
+              </>,
+            );
+          })
+        }
+      >
         Submit
       </Button>
     </Stack>
