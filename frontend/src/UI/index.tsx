@@ -13,10 +13,7 @@ const UI = () => {
 
   const inputListQuery = useQuery({
     queryKey: ['inputList'],
-    queryFn: () => {
-      console.log('refetching');
-      return getInputList(connection);
-    }, // connection is an unmarked dependency, but my intuition is saying that's not the particular problem i'm having?
+    queryFn: () => getInputList(connection),
   });
 
   const options = inputListQuery.isSuccess ? (inputListQuery.data.map(e => e.inputName) ?? []) : [];

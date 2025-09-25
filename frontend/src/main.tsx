@@ -10,7 +10,13 @@ import { SnackbarProvider } from 'notistack';
 const container = document.getElementById('root');
 const root = createRoot(container!);
 
-const queryclient = new QueryClient();
+const queryclient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchInterval: 1000,
+    },
+  },
+});
 
 const darkTheme = createTheme({
   palette: {
