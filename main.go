@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"fmt"
+	"os"
 
 	wailsconfigstore "github.com/AndreiTelteu/wails-configstore"
 	"github.com/wailsapp/wails/v2"
@@ -21,8 +22,14 @@ func main() {
 	configStore, err := wailsconfigstore.NewConfigStore("viewparty")
 	if err != nil {
 		// error too early to display, and not particularly recoverable
-		fmt.Printf("could not initialize the config store: %v\n", err)
+		fmt.Printf("Could not initialize the config store: %v\n", err)
 		return
+	}
+
+	ic, err := os.ReadFile("./build/appicon.png")
+	if err != nil {
+		println("Failed to read appicon: " + err.Error())
+		// probably recoverable
 	}
 
 	// Create application with options
@@ -41,11 +48,12 @@ func main() {
 		},
 		Linux: &linux.Options{
 			WebviewGpuPolicy: linux.WebviewGpuPolicyAlways,
+			Icon:             ic,
 		},
 	})
 
 	if err != nil {
 		// if we get here, something has already gone quite wrong
-		println("Error:", err.Error())
+		println("Error: ", err.Error())
 	}
 }
