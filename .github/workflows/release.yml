@@ -1,0 +1,28 @@
+name: Build and Release
+permissions:
+  contents: write
+
+on:
+  push:
+    tags: 'v*'
+
+jobs:
+  release:
+    name: Build and Release
+    strategy:
+      matrix:
+        platform: [windows/amd64, windows/arm64, linux/amd64, linux/arm64, darwin/universal]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
+      - name: Install frontend dependencies # Might not be necessary. Wails probably does this for me.
+        run: npm install
+        working-directory: frontend
+      - name: Build
+        run: wails build --platform ${{matrix.platform}}
+      - name: Upload release assets # Seems better to do this here, with a 'uses' step
+        uses: softprops/action-gh-release@v2
+        with:
+          files: #
