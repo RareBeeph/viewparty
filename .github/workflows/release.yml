@@ -17,19 +17,19 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - name: 'App'
+          - name: 'viewparty-x64'
             platform: 'linux/amd64'
             os: 'ubuntu-latest'
-          - name: 'App'
+          - name: 'viewparty-arm64'
             platform: 'linux/arm64'
-            os: 'ubuntu-latest'
-          - name: 'App'
+            os: 'ubuntu-24.04-arm'
+          - name: 'viewparty-x64'
             platform: 'windows/amd64'
             os: 'windows-latest'
-          - name: 'App'
+          - name: 'viewparty-arm64'
             platform: 'windows/arm64'
-            os: 'windows-latest'
-          - name: 'App'
+            os: 'windows-11-arm'
+          - name: 'viewparty'
             platform: 'darwin/universal'
             os: 'macos-latest'
 
@@ -46,5 +46,5 @@ jobs:
         with:
           build-name: ${{ matrix.build.name }}
           build-platform: ${{ matrix.build.platform }}
-          package: true
+          package: false
           go-version: '1.25'
