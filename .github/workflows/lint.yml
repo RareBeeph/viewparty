@@ -2,7 +2,10 @@ name: Lint and Test
 permissions:
   contents: read
 
-'on': push
+on:
+  push:
+    # Goal here is to not bother to re-lint when the push only affects tags
+    branches: '**'
 
 jobs:
   lint:
