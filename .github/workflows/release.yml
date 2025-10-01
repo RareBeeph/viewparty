@@ -79,3 +79,4 @@ jobs:
             build-assets/build/bin/viewparty-linux-arm64
             build-assets/build/bin/viewparty-windows-x64
             build-assets/build/bin/viewparty-macos.pkg
+          generate_release_notes: true
