@@ -28,7 +28,7 @@ jobs:
           - name: 'viewparty-windows-x64'
             platform: 'windows/amd64'
             os: 'windows-latest'
-          - name: 'viewparty-macos'
+          - name: 'viewparty'
             platform: 'darwin/universal'
             os: 'macos-latest'
 
@@ -66,6 +66,8 @@ jobs:
           merge-multiple: true
 
       - run: ls -R build-assets
+
+      - run: mv build-assets/build/bin/viewparty.pkg build-assets/build/bin/viewparty-macos.pkg
 
       - name: Release
         uses: softprops/action-gh-release@v2
