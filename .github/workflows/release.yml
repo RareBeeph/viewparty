@@ -25,10 +25,10 @@ jobs:
           - name: 'viewparty-linux-arm64'
             platform: 'linux/arm64'
             os: 'ubuntu-24.04-arm'
-          - name: 'viewparty-windows-x64'
+          - name: 'viewparty-windows'
             platform: 'windows/amd64'
             os: 'windows-latest'
-          - name: 'viewparty'
+          - name: 'viewparty' # macos won't build properly with a different name parameter
             platform: 'darwin/universal'
             os: 'macos-latest'
 
