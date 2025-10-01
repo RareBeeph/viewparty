@@ -19,19 +19,16 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - name: 'viewparty-x64'
+          - name: 'viewparty-linux-x64'
             platform: 'linux/amd64'
             os: 'ubuntu-latest'
-          - name: 'viewparty-arm64'
+          - name: 'viewparty-linux-arm64'
             platform: 'linux/arm64'
             os: 'ubuntu-24.04-arm'
-          - name: 'viewparty-x64'
+          - name: 'viewparty-windows-x64'
             platform: 'windows/amd64'
             os: 'windows-latest'
-          - name: 'viewparty-arm64'
-            platform: 'windows/arm64'
-            os: 'windows-11-arm'
-          - name: 'viewparty'
+          - name: 'viewparty-macos'
             platform: 'darwin/universal'
             os: 'macos-latest'
 
@@ -73,5 +70,10 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
+          # just giving explicit paths should work,
+          # but we could also rm the files we don't want to include and then match these with *
           files: |
-            build-assets/**
+            build-assets/build/bin/viewparty-linux-x64
+            build-assets/build/bin/viewparty-linux-arm64
+            build-assets/build/bin/viewparty-windows-x64
+            build-assets/build/bin/viewparty-macos.pkg
