@@ -25,7 +25,7 @@ jobs:
           - name: 'viewparty-linux-arm64'
             platform: 'linux/arm64'
             os: 'ubuntu-24.04-arm'
-          - name: 'viewparty-windows'
+          - name: 'viewparty-windows.exe'
             platform: 'windows/amd64'
             os: 'windows-latest'
           - name: 'viewparty' # macos won't build properly with a different name parameter
@@ -77,6 +77,6 @@ jobs:
           files: |
             build-assets/build/bin/viewparty-linux-x64
             build-assets/build/bin/viewparty-linux-arm64
-            build-assets/build/bin/viewparty-windows-x64
+            build-assets/build/bin/viewparty-windows.exe
             build-assets/build/bin/viewparty-macos.pkg
           generate_release_notes: true
