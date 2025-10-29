@@ -1,7 +1,6 @@
 # viewparty-nzl
 
 [![Lint and Test](https://github.com/RareBeeph/viewparty/actions/workflows/lint.yml/badge.svg)](https://github.com/RareBeeph/viewparty/actions/workflows/lint.yml)
-[![Wails build and release](https://github.com/RareBeeph/viewparty/actions/workflows/release.yml/badge.svg)](https://github.com/RareBeeph/viewparty/actions/workflows/release.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/RareBeeph/viewparty)](https://github.com/RareBeeph/viewparty/releases/latest)
 
 [//]: # 'Minesweeper-XP had badges for download counts as well.'
